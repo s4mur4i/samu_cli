@@ -10,6 +10,7 @@ class BaseCommand(object):
         self.password = self.cfg_parser.get('app_level', 'password') 
         self.app_base_url = self.cfg_parser.get('app_level', 'app_base_url')
         self.args = None
+        self.session_id = None
     def create_parser(self):
         
         self.parser = argparse.ArgumentParser()
@@ -20,7 +21,6 @@ class BaseCommand(object):
         self.parser.add_argument('--app_base_url', help="Application's base URL", \
                 default=self.app_base_url)
 
-
         self.add_arguments()
         self.args = self.parser.parse_args()
 
@@ -28,12 +28,12 @@ class BaseCommand(object):
         """
         Entrypoint for subclasses to add arguments
         """
-        pass
-
-    def excute(self):
-        pass
+    def test(self):
+        print 'test called'
+    def execute(self):
+        print getattr(self, 'testsds')()
 
 
 b = BaseCommand()
 b.create_parser()
-print b.args
+print b.execute()
