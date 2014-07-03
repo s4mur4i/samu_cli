@@ -4,20 +4,30 @@ from base import BaseCommand
 class Admin(BaseCommand):
     def __init__(self, *args, **kwargs):
         super(Admin, self).__init__(args, kwargs)
-        self.admin_url = self.base_url + '/admin'
+        self.admin_url = self.app_base_url + '/admin'
         self.endpoint = None
+        self.user_id = None
+        self.role = None
+        self.name = None
+        self.value = None
+        self.email = None
+
     def add_arguments(self):
-        self.parser.add_argument('--email', help="Email of admin")
-        self.parser.add_argument('--endpoint', help="REST endpoint to \
-                call", default=self.endpoint)
-        self.parser.add_argument('--user_id', help='Used in assigning roles')
-        self.parser.add_argument('--role', help='Used in REST calls involving roles')
-        self.parser.add_argument('--name', help='Used for config endpoint')
-        self.parser.add_argument('--value', help-'Used for config endpoint')
+        self.parser.add_argument('--email', default=None, help="Email of admin")
+        self.parser.add_argument('--endpoint', default=None, help="REST endpoint to \
+                call")
+        self.parser.add_argument('--user_id', default=None, help='Used in assigning roles')
+        self.parser.add_argument('--role', default=None, help='Used in REST calls involving roles')
+        self.parser.add_argument('--name', default=None, help='Used for config endpoint')
+        self.parser.add_argument('--value', default=None, help='Used for config endpoint')
 
     def execute(self):
+        super(Admin, self).create_parser()
+        if not self.endpoint:
+            raise Exception("An endpoint must be defined")
         try:
             method = getattr(self, self.endpoint)
+            method() #call the method specified in self.endpoint
         except AttributeError, e:
             print "Please enter a correct REST endpoint, cannot find \
             implementation of this endpoint"

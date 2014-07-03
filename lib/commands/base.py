@@ -20,9 +20,9 @@ class BaseCommand(object):
                 default=self.password)
         self.parser.add_argument('--app_base_url', help="Application's base URL", \
                 default=self.app_base_url)
-
+        self.parser.add_argument('--session_id')
         self.add_arguments()
-        self.args = self.parser.parse_args()
+        self.args = self.parser.parse_args(namespace=self)
 
     def add_arguments(self):
         """
@@ -33,7 +33,20 @@ class BaseCommand(object):
     def execute(self):
         print getattr(self, 'testsds')()
 
+class Child(BaseCommand):
+    def __init__(self, *args, **kwargs):
+        super(Child, self).__init__(args, kwargs)
 
-b = BaseCommand()
-b.create_parser()
-print b.execute()
+    def add_arguments(self):
+        self.parser.add_argument('--someone')
+    def execute(self):
+        super(Child, self).create_parser()
+
+c = Child()
+c.execute()
+print c.someone
+# = BaseCommand()
+#.create_parser()
+#rint b.session_id
+#rint type(b.args)
+#rint b.execute()
