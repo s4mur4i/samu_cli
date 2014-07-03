@@ -12,10 +12,8 @@ class Admin(BaseCommand):
                 call", default=self.endpoint)
         self.parser.add_argument('--user_id', help='Used in assigning roles')
         self.parser.add_argument('--role', help='Used in REST calls involving roles')
-        self.parser.add_argument('--name', help='Used for config
-        endpoint')
-        self.parser.add_argument('--value', help-'Used for config
-        endpoint')
+        self.parser.add_argument('--name', help='Used for config endpoint')
+        self.parser.add_argument('--value', help-'Used for config endpoint')
 
     def execute(self):
         try:
@@ -28,13 +26,22 @@ class Admin(BaseCommand):
         payload = {'username': self.username, 'email': self.email,
                 'password': self.password}
         resp = requests.post(self.admin_url, data=payload)
-        return resp.text
+        json = resp.json()
+        assert json['result'] == 'success'
+        return json
 
     def login(self):
         payload = {'username': self.username, 'password': self.password}
         resp = requests.post(self.admin_url + '/login')
-        #TODO: store session id
-        return resp.text
+        json = resp.json()
+        if json:
+            #verify that it's a succesful login
+            assert json['result'] == 'success'
+            if json.has_key('sessionid'):
+                self.session_id = json['sessionid']
+            else:
+                raise Exception("Didn't receive session-id after login")
+        return json
 
     def logout(self):
         resp = requests.get(self.admin_url + '/logoff')
