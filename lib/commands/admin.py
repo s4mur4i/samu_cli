@@ -68,7 +68,9 @@ class Admin(BaseCommand):
         return resp.text
     def get_user_info(self):
         assert self.session_id is not None
-        return requests.get(self.admin_url + '/profile/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
+        print(resp.json())
+        return resp.json()
     
     def update_user_info(self):
         assert self.session_id is not None
