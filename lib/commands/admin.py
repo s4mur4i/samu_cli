@@ -28,7 +28,7 @@ class Admin(BaseCommand):
         try:
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
-        except AttributeError, e:
+        except AttributeError as e:
             print "Please enter a correct REST endpoint, cannot find \
             implementation of this endpoint"
 
