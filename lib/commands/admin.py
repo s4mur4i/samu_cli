@@ -14,8 +14,7 @@ class Admin(BaseCommand):
 
     def add_arguments(self):
         self.parser.add_argument('--email', default=None, help="Email of admin")
-        self.parser.add_argument('--endpoint', default=None, help="REST endpoint to \
-                call")
+        self.parser.add_argument('--endpoint', default=None, help="REST endpoint to call")
         self.parser.add_argument('--user_id', default=None, help='Used in assigning roles')
         self.parser.add_argument('--role', default=None, help='Used in REST calls involving roles')
         self.parser.add_argument('--name', default=None, help='Used for config endpoint')
@@ -29,8 +28,7 @@ class Admin(BaseCommand):
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
-            print "Please enter a correct REST endpoint, cannot find \
-            implementation of this endpoint"
+            print "Please enter a correct REST endpoint, cannot find implementation of this endpoint"
 
     def register(self):
         payload = {'username': self.username, 'email': self.email,
