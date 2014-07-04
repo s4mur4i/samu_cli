@@ -32,6 +32,7 @@ class Admin(BaseCommand):
             print("Please enter a correct REST endpoint")
 
     def register(self):
+        print("Username" + self.username)
         payload = {'username': self.username, 'email': self.email,
                 'password': self.password}
         resp = requests.post(self.admin_url, data=payload)
