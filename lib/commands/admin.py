@@ -52,7 +52,7 @@ class Admin(BaseCommand):
             assert json['result'] == 'success'
             if json.has_key('sessionid'):
                 self.session_id = json['sessionid']
-                session_file = open(self.session_file_path, encoding='utf-8')
+                session_file = open(self.session_file_path, mode='w', encoding='utf-8')
                 session_file.write(self.session_id)
                 session_file.close()
             else:
