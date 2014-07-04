@@ -31,6 +31,7 @@ class Admin(BaseCommand):
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
+            print(dir(e))
             print(e.msg)
             print("Please enter a correct REST endpoint")
 
