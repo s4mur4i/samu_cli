@@ -29,9 +29,9 @@ class BaseCommand(object):
         Entrypoint for subclasses to add arguments
         """
     def test(self):
-        print 'test called'
+        print('test called')
     def execute(self):
-        print getattr(self, 'testsds')()
+        print(getattr(self, 'testsds')())
 
 class Child(BaseCommand):
     def __init__(self, *args, **kwargs):
@@ -44,7 +44,7 @@ class Child(BaseCommand):
 
 c = Child()
 c.execute()
-print c.someone
+print(c.someone)
 # = BaseCommand()
 #.create_parser()
 #rint b.session_id
