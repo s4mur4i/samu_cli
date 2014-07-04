@@ -28,6 +28,7 @@ class BaseCommand(object):
         """
         Entrypoint for subclasses to add arguments
         """
+        pass
     def test(self):
         print('test called')
     def execute(self):
