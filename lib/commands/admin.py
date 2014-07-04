@@ -52,7 +52,7 @@ class Admin(BaseCommand):
         if json:
             #verify that it's a succesful login
             assert json['result'] == 'success'
-            if json.has_key('sessionid'):
+            if json.keys('sessionid'):
                 self.session_id = json['sessionid']
                 print("Going to write sessionid in file")
                 session_file = open(self.session_file_path, mode='w', encoding='utf-8')
