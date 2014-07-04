@@ -42,7 +42,7 @@ class Admin(BaseCommand):
     def login(self):
         print("Username " + self.username)
         payload = {'username': self.username, 'password': self.password}
-        resp = requests.post(self.admin_url + '/login')
+        resp = requests.post(self.admin_url + '/login', data=payload)
         json = resp.json()
         print(json)
         if json:
