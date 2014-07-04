@@ -117,6 +117,6 @@ class Admin(BaseCommand):
         
         
 
-
-a = Admin()
-a.create_parser()
+if __name__ == "__main__":
+    a = Admin()
+    a.execute()
