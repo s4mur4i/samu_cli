@@ -1,6 +1,9 @@
+import os
 from configparser import SafeConfigParser
 import argparse
 
+
+CURRENT_DIR = os.path.dirname(__file__)
 class BaseCommand(object):
 
     def __init__(self, *args, **kwargs):
@@ -11,6 +14,8 @@ class BaseCommand(object):
         self.app_base_url = self.cfg_parser.get('app_level', 'app_base_url')
         self.args = None
         self.session_id = None
+        self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
+        self.get_sessionid()
     def create_parser(self):
         
         self.parser = argparse.ArgumentParser()
@@ -33,6 +38,16 @@ class BaseCommand(object):
         print('test called')
     def execute(self):
         print(getattr(self, 'testsds')())
+
+    def get_sessionid(self):
+        session_file = None 
+        try:
+            session_file = open(self.session_file_path, encoding='utf-8')
+        except IOError:
+            self.session_id = None
+        else:
+            self.session_id = session_file.read() or None
+            session_file.close()
 
 
 # = BaseCommand()

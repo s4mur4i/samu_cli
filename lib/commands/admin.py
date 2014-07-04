@@ -1,6 +1,7 @@
 import requests
 from base import BaseCommand
 
+
 class Admin(BaseCommand):
     def __init__(self, *args, **kwargs):
         super(Admin, self).__init__(args, kwargs)
@@ -11,6 +12,7 @@ class Admin(BaseCommand):
         self.name = None
         self.value = None
         self.email = None
+
 
     def add_arguments(self):
         self.parser.add_argument('--email', default=None, help="Email of admin")
@@ -50,6 +52,9 @@ class Admin(BaseCommand):
             assert json['result'] == 'success'
             if json.has_key('sessionid'):
                 self.session_id = json['sessionid']
+                session_file = open(self.session_file_path, encoding='utf-8')
+                session_file.write(self.session_id)
+                session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
         return json
