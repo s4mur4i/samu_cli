@@ -28,7 +28,7 @@ class Admin(BaseCommand):
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
-            print "Please enter a correct REST endpoint"
+            print("Please enter a correct REST endpoint")
 
     def register(self):
         payload = {'username': self.username, 'email': self.email,
@@ -120,4 +120,3 @@ class Admin(BaseCommand):
 
 a = Admin()
 a.create_parser()
-print a.args
