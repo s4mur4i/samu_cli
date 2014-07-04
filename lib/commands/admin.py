@@ -19,6 +19,7 @@ class Admin(BaseCommand):
         self.parser.add_argument('--role', default=None, help='Used in REST calls involving roles')
         self.parser.add_argument('--name', default=None, help='Used for config endpoint')
         self.parser.add_argument('--value', default=None, help='Used for config endpoint')
+        print("Finished adding arguments!")
 
     def execute(self):
         super(Admin, self).create_parser()
