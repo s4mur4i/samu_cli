@@ -43,6 +43,7 @@ class Admin(BaseCommand):
         payload = {'username': self.username, 'password': self.password}
         resp = requests.post(self.admin_url + '/login')
         json = resp.json()
+        print(json)
         if json:
             #verify that it's a succesful login
             assert json['result'] == 'success'
