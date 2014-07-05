@@ -75,6 +75,7 @@ class Admin(BaseCommand):
     def update_user_info(self):
         assert self.session_id is not None
         payload = {'username': self.username, 'email': self.email,'password': self.password}
+        print(payload)
         resp = requests.post(self.admin_url + '/profile/2/-/' + self.session_id, data=payload)
         print(resp.json())
         return resp.json()
@@ -104,10 +105,12 @@ class Admin(BaseCommand):
         return resp.json()
     def assign_userid_to_role(self):
         payload = {'user_id': self.user_id, 'role': self.role}
+        print(payload)
         resp = requests.post(self.admin_url + '/roles', data=payload)
         return resp.json()
     def delete_role(self):
         payload = {'user_id': self.user_id, 'role': self.role}
+        print(payload)
         resp = requests.delete(self.admin_url + '/roles')
         return resp.json()
     def get_users_for_role(self):
@@ -120,6 +123,7 @@ class Admin(BaseCommand):
         return resp.json()
     def set_user_config(self):
         payload = {'name': self.name, 'value': self.value}
+        print(payload)
         resp = requests.post(self.admin_url + '/profile/ ' + self.user_id + \
                 '/configs/-/' + self.session_id, data=payload)
         print(resp.json())
@@ -127,6 +131,7 @@ class Admin(BaseCommand):
 
     def delete_user_config(self):
         payload = {'name': self.name}
+        print(payload)
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
                 '/configs/-/' + self.session_id, data=payload)
         return resp.json()
