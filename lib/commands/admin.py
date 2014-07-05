@@ -76,18 +76,18 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         payload = {'username': self.username, 'email': self.email,'password': self.password}
         print(payload)
-        resp = requests.post(self.admin_url + '/profile/2/-/' + self.session_id, data=payload)
+        resp = requests.post(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id, data=payload)
         print(resp.json())
         return resp.json()
 
     def get_profile(self):
         assert self.session_id is not None
-        resp = requests.get(self.admin_url + '/profile/2/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
         print(resp.json())
         return resp.json()
     def delete_profile(self):
         assert self.session_id is not None
-        resp = requests.delete(self.admin_url + '/profile/2/-/' + self.session_id)
+        resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
         print(resp.json())
         return resp.json()
     def list_users(self):
