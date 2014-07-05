@@ -74,9 +74,9 @@ class Admin(BaseCommand):
     
     def update_user_info(self):
         assert self.session_id is not None
-        data = {'username': self.username, 'email': self.email,'password': self.password}
-        resp = requests.post(self.admin_url + '/profile/2/-/' + self.session_id)
-        return resp.text
+        payload = {'username': self.username, 'email': self.email,'password': self.password}
+        resp = requests.post(self.admin_url + '/profile/2/-/' + self.session_id, data=payload)
+        return resp.json()
 
     def get_profile(self):
         assert self.session_id is not None
