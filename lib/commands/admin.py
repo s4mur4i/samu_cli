@@ -65,7 +65,7 @@ class Admin(BaseCommand):
     def logout(self):
         resp = requests.get(self.admin_url + '/logoff')
         self.session_id = None
-        return resp.text
+        return resp.json()
     def get_user_info(self):
         assert self.session_id is not None
         resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
@@ -80,47 +80,47 @@ class Admin(BaseCommand):
 
     def get_profile(self):
         assert self.session_id is not None
-        return requests.get(self.admin_url + '/profile/2/-/' + self.session_id)
+        return requests.get(self.admin_url + '/profile/2/-/' + self.session_id).json()
 
     def delete_profile(self):
         assert self.session_id is not None
-        return requests.delete(self.admin_url + '/profile/2/-/' + self.session_id)
+        return requests.delete(self.admin_url + '/profile/2/-/' + self.session_id).json()
 
     def list_users(self):
-        return requests.get(self.admin_url + " /list").text
+        return requests.get(self.admin_url + " /list").json()
 
     def get_one_user(self):
-        return requests.get(self.admin_url + "/list/" + self.username).text
+        return requests.get(self.admin_url + "/list/" + self.username).json()
 
     def get_all_roles(self):
-        return requests.get(self.admin_url + '/roles').text
+        return requests.get(self.admin_url + '/roles').json()
 
     def assign_userid_to_role(self):
         payload = {'user_id': self.user_id, 'role': self.role}
-        return requests.post(self.admin_url + '/roles').text
+        return requests.post(self.admin_url + '/roles', data=payload).json()
 
     def delete_role(self):
         payload = {'user_id': self.user_id, 'role': self.role}
-        return requests.delete(self.admin_url + '/roles').text
+        return requests.delete(self.admin_url + '/roles').json()
 
     def get_users_for_role(self):
-        return requests.get(self.admin_url + '/roles/' + self.role).text
+        return requests.get(self.admin_url + '/roles/' + self.role).json()
     
     def get_user_configs(self):
-        return requests.get(self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id)
+        return requests.get(self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id).json()
 
     def set_user_config(self):
         payload = {'name': self.name, 'value': self.value}
         resp = requests.post(self.admin_url + '/profile/ ' + self.user_id + \
                 '/configs/-/' + self.session_id, data=payload)
 
-        return resp.text
+        return resp.json()
 
     def delete_user_config(self):
         payload = {'name': self.name}
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
                 '/configs/-/' + self.session_id, data=payload)
-        return resp.text
+        return resp.json()
 
 
 
