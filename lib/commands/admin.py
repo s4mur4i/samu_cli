@@ -82,6 +82,7 @@ class Admin(BaseCommand):
 
     def get_profile(self):
         assert self.session_id is not None
+        assert self.user_id is not None
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
         print(resp.json())
         return resp.json()
@@ -99,10 +100,7 @@ class Admin(BaseCommand):
         resp = requests.get(self.admin_url + "/list/" + self.username)
         print(resp.json())
         return resp.json()
-    def get_all_roles(self):
-        resp = requests.get(self.admin_url + '/roles')
-        print(resp.json())
-        return resp.json()
+
     def assign_userid_to_role(self):
         payload = {'user_id': self.user_id, 'role': self.role}
         print(payload)
@@ -118,6 +116,8 @@ class Admin(BaseCommand):
         print(resp.json())
         return resp.json() 
     def get_user_configs(self):
+        url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
+        print(url)
         resp = requests.get(self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id)
         print(resp.json())
         return resp.json()
