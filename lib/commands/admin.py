@@ -118,13 +118,13 @@ class Admin(BaseCommand):
     def get_user_configs(self):
         url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
-        resp = requests.get(self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id)
         print(resp.json())
         return resp.json()
     def set_user_config(self):
         payload = {'name': self.name, 'value': self.value}
         print(payload)
-        resp = requests.post(self.admin_url + '/profile/ ' + self.user_id + \
+        resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
                 '/configs/-/' + self.session_id, data=payload)
         print(resp.json())
         return resp.json()
