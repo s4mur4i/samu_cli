@@ -122,6 +122,8 @@ class Admin(BaseCommand):
         print(resp.json())
         return resp.json()
     def set_user_config(self):
+        assert self.session_id is not None
+        assert self.user_id is not None
         payload = {'name': self.name, 'value': self.value}
         print(payload)
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
