@@ -10,7 +10,6 @@ class VMWareBase(BaseCommand):
         self.url = self.app_base_url + '/vmware'
 
     def add_arguments(self):
-        super(VM, self).add_arguments()
         self.parser.add_arguments('--email', help="Email of admin")
         self.parser.add_arguments('--vcenter_username', help='VMware username',\
                 default=self.vcenter_username)
