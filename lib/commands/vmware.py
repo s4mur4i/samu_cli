@@ -15,7 +15,7 @@ class VMWareBase(BaseCommand):
                 default=self.vcenter_username)
         self.parser.add_argument('--vcenter_password', help='VMware password',\
                 default=self.vcenter_password)
-        self.parser.add_arguments('--vcenter_hrl', help='Vcenter URL')
+        self.parser.add_argument('--vcenter_hrl', help='Vcenter URL')
 
     def vm_login(self):
         assert self.session_id is not None
