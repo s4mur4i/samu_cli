@@ -1,4 +1,4 @@
-from commands.base import BaseCommand
+from base import BaseCommand
 
 class VMWareBase(BaseCommand):
     def __init__(self, *args, **kwargs):
