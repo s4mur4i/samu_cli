@@ -25,9 +25,31 @@ class BaseCommand(object):
                 default=self.password)
         self.parser.add_argument('--app_base_url', help="Application's base URL", \
                 default=self.app_base_url)
+        self.parser.add_argument('--endpoint', default=None, help="REST endpoint to call")
         self.parser.add_argument('--session_id')
         self.add_arguments()
         self.args = self.parser.parse_args(namespace=self)
+
+    def login(self):
+        print("Username " + self.username)
+        payload = {'username': self.username, 'password': self.password}
+        url = self.app_base_url +"/admin"
+        resp = requests.post(url, data=payload)
+        json = resp.json()
+        print(json)
+        if json:
+            #verify that it's a succesful login
+            assert json['result'] == 'success'
+            if 'sessionid' in json.keys():
+                self.session_id = json['sessionid']
+                print("Going to write sessionid in file")
+                session_file = open(self.session_file_path, mode='w', encoding='utf-8')
+                session_file.write(self.session_id)
+                session_file.close()
+            else:
+                raise Exception("Didn't receive session-id after login")
+        return json
+
 
     def add_arguments(self):
         """
@@ -37,7 +59,14 @@ class BaseCommand(object):
     def test(self):
         print('test called')
     def execute(self):
-        print(getattr(self, 'testsds')())
+        self.create_parser()
+        if not self.endpoint:
+            raise Exception("An endpoint must be defined")
+        try:
+            method = getattr(self, self.endpoint)
+            method() #call the method specified in self.endpoint
+        except AttributeError as e:
+            print("Please enter a correct REST endpoint")
 
     def get_sessionid(self):
         session_file = None 
