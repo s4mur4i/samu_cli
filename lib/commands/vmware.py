@@ -2,7 +2,7 @@ from base import BaseCommand
 
 class VMWareBase(BaseCommand):
     def __init__(self, *args, **kwargs):
-        super(Admin, self).__init__(args, kwargs)
+        super(VMWareBase, self).__init__(args, kwargs)
         self.vcenter_username = self.cfg_parser('vmware', 'username')
         self.vcenter_password = self.cfg_parser('vmware', 'password')
         self.url = self.app_base_url + '/vmware'
