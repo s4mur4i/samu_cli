@@ -10,10 +10,10 @@ class VMWareBase(BaseCommand):
         self.url = self.app_base_url + '/vmware'
 
     def add_arguments(self):
-        self.parser.add_arguments('--email', help="Email of admin")
-        self.parser.add_arguments('--vcenter_username', help='VMware username',\
+        self.parser.add_argument('--email', help="Email of admin")
+        self.parser.add_argument('--vcenter_username', help='VMware username',\
                 default=self.vcenter_username)
-        self.parser.add_arguments('--vcenter_password', help='VMware password',\
+        self.parser.add_argument('--vcenter_password', help='VMware password',\
                 default=self.vcenter_password)
         self.parser.add_arguments('--vcenter_hrl', help='Vcenter URL')
 
@@ -34,13 +34,13 @@ class VM(VMWareBase):
 
     def add_arguments(self):
         super(VM, self).add_arguments()
-        self.parser.add_arguments('--vm', help='Information about virtual machine')
-        self.parser.add_arguments('--clone', help='Clones a machine from the moref, will have further options or maybe its own endpoint')
-        self.parser.add_arguments('--delete', help='Deletes the machine')
-        self.parser.add_arguments('--vmname', help='Name of one VM')
-        self.parser.add_arguments('--attr', help='If you want to know an attribute of VM then use this argument')
-        self.parser.add_arguments("--attr_key", help='This is attribute key e.g. one possible value can be "memorymb"')
-        self.parser.add_arguments("--attr_value", help='Attribute value e.g. one possible value can be "4097" assuming' + \
+        self.parser.add_argument('--vm', help='Information about virtual machine')
+        self.parser.add_argument('--clone', help='Clones a machine from the moref, will have further options or maybe its own endpoint')
+        self.parser.add_argument('--delete', help='Deletes the machine')
+        self.parser.add_argument('--vmname', help='Name of one VM')
+        self.parser.add_argument('--attr', help='If you want to know an attribute of VM then use this argument')
+        self.parser.add_argument("--attr_key", help='This is attribute key e.g. one possible value can be "memorymb"')
+        self.parser.add_argument("--attr_value", help='Attribute value e.g. one possible value can be "4097" assuming' + \
                 "attr_key was 'memorymb'")
     def execute(self):
         self.create_parser()
