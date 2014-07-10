@@ -1,4 +1,4 @@
-import base
+import requests
 import os
 from configparser import SafeConfigParser
 import argparse
