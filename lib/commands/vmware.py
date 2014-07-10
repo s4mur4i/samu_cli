@@ -129,5 +129,5 @@ class ResourcePool(VMWareBase):
 
 
 if __name__ == "__main__":
-    vm = VMWare()
+    vm = VM()
     vm.execute()
