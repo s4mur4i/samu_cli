@@ -10,6 +10,7 @@ class VMWareBase(BaseCommand):
         self.url = self.app_base_url + '/vmware'
 
     def add_arguments(self):
+        super(VM, self).add_arguments()
         self.parser.add_arguments('--email', help="Email of admin")
         self.parser.add_arguments('--vcenter_username', help='VMware username',\
                 default=self.vcenter_username)
@@ -42,7 +43,17 @@ class VM(VMWareBase):
         self.parser.add_arguments("--attr_key", help='This is attribute key e.g. one possible value can be "memorymb"')
         self.parser.add_arguments("--attr_value", help='Attribute value e.g. one possible value can be "4097" assuming' + \
                 "attr_key was 'memorymb'")
-    
+    def execute(self):
+        self.create_parser()
+        if not self.endpoint:
+            raise Exception("An endpoint must be defined")
+        try:
+            method = getattr(self, self.endpoint)
+            method() #call the method specified in self.endpoint
+        except AttributeError as e:
+            print("Please enter a correct REST endpoint")
+
+
     def get_all_vms_info(self):
         assert self.session_id is not None
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()

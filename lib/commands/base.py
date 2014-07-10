@@ -57,18 +57,6 @@ class BaseCommand(object):
         Entrypoint for subclasses to add arguments
         """
         pass
-    def test(self):
-        print('test called')
-    def execute(self):
-        self.create_parser()
-        if not self.endpoint:
-            raise Exception("An endpoint must be defined")
-        try:
-            method = getattr(self, self.endpoint)
-            method() #call the method specified in self.endpoint
-        except AttributeError as e:
-            print("Please enter a correct REST endpoint")
-
     def get_sessionid(self):
         session_file = None 
         try:
