@@ -34,7 +34,7 @@ class BaseCommand(object):
     def login(self):
         print("Username " + self.username)
         payload = {'username': self.username, 'password': self.password}
-        url = self.app_base_url +"/admin"
+        url = self.app_base_url + "/admin/login"
         resp = requests.post(url, data=payload)
         json = resp.json()
         print(json)
