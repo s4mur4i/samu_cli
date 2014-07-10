@@ -1,10 +1,12 @@
 from base import BaseCommand
+from configparser import SafeConfigParser
+
 
 class VMWareBase(BaseCommand):
     def __init__(self, *args, **kwargs):
         super(VMWareBase, self).__init__(args, kwargs)
-        self.vcenter_username = self.cfg_parser('vmware', 'username')
-        self.vcenter_password = self.cfg_parser('vmware', 'password')
+        self.vcenter_username = self.cfg_parser.get('vmware', 'username')
+        self.vcenter_password = self.cfg_parser.get('vmware', 'password')
         self.url = self.app_base_url + '/vmware'
 
     def add_arguments(self):
