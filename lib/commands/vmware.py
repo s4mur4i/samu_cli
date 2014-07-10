@@ -128,8 +128,6 @@ class ResourcePool(VMWareBase):
 
 
 
-
-
-a = Admin()
-a.create_parser()
-print a.args
+if __name__ == "__main__":
+    vm = VMWare()
+    vm.execute()
