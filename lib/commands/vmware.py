@@ -25,7 +25,7 @@ class VMWareBase(BaseCommand):
                 self.vcenter_password, 'vcenter_url': self.vcenter_url}
         url = self.url + "/-/" + self.session_id
         print('Requesting ' + url)
-        print("Data= " + payload)
+        print("Data= " + str(payload))
         resp = requests.post(url, data=payload)
         resp = resp.json()
         print(resp)
