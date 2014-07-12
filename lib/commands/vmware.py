@@ -1,3 +1,4 @@
+import requests
 from base import BaseCommand
 from configparser import SafeConfigParser
 
