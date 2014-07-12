@@ -23,7 +23,10 @@ class VMWareBase(BaseCommand):
         assert self.session_id is not None
         payload = {'vcenter_username':self.vcenter_username, 'vcenter_password':\
                 self.vcenter_password, 'vcenter_url': self.vcenter_url}
-        resp = requests.post(self.url + "/-/" + self.session_id, data=payload)
+        url = self.url + "/-/" + self.session_id
+        print('Requesting ' + url)
+        print("Data= " + payload)
+        resp = requests.post(url, data=payload)
         resp = resp.json()
         print(resp)
         assert resp['result'] == 'success'
@@ -49,8 +52,6 @@ class VM(VMWareBase):
         if not self.endpoint:
             raise Exception("An endpoint must be defined")
         try:
-            print(dir(self))
-            print(self.endpoint)
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
