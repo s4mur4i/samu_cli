@@ -61,6 +61,7 @@ class VM(VMWareBase):
 
     def get_all_vms_info(self):
         assert self.session_id is not None
+        print('Request ' + self.url + "/vm/-/" + self.session_id)
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()
         print(resp)
         return resp
@@ -68,6 +69,7 @@ class VM(VMWareBase):
     def get_one_vm_info(self):
         assert self.session_id is not None
         assert self.vmname is not None
+        print('Requesitng ' + self.url + "/vm/" + self.vmname + "-/" + self.session_id)
         resp = requests.get(self.url + "/vm/" + self.vmname + "-/" + self.session_id).json()
         print(resp)
         return resp
