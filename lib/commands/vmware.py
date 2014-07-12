@@ -52,6 +52,7 @@ class VM(VMWareBase):
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
+            print(e)
             print("Please enter a correct REST endpoint")
 
 
