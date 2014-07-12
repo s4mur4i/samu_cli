@@ -48,6 +48,7 @@ class VM(VMWareBase):
             raise Exception("An endpoint must be defined")
         try:
             print(dir(self))
+            print self.endpoint
             method = getattr(self, self.endpoint)
             method() #call the method specified in self.endpoint
         except AttributeError as e:
