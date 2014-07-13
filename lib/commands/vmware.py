@@ -93,10 +93,10 @@ class VM(VMWareBase):
         assert self.attr_value is not None
         #e.g. self.attr can be 'memory' whereas self.attr_key can be 'memorymb'
         #and self.attr_value can be '4097
-        data = { self.attr_key : self.attr_value }
+        payload = { self.attr_key : self.attr_value }
         url = self.url + "/vm/" + self.vmname + "/" + self.attr + "/-/" + self.session_id
         print("Requesting " + url)
-        resp = requests.get(url).json()
+        resp = requests.get(url, data=payload).json()
         assert resp['result'] == 'success'
         print(resp)
         return resp
