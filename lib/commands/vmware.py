@@ -97,8 +97,7 @@ class VM(VMWareBase):
         url = self.url + "/vm/" + self.vmname + "/" + self.attr + "/-/" + self.session_id
         print("Requesting " + url)
         print("Sending data " + str(payload))
-        resp = requests.put(url, data=payload)
-        print("Response " + resp.text)
+        resp = requests.put(url, data=payload).json()
         assert resp['result'] == 'success'
         print(resp)
         return resp
