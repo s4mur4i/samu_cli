@@ -20,6 +20,14 @@ class VMWareBase(BaseCommand):
         self.parser.add_argument('--vcenter_hrl', help='Vcenter URL')
 
     def vm_login(self):
+        """
+        By default 'vcenter_username' and 'vcenter_password' are taken
+        from the config file, however, they can be specified on 
+        command line as well
+        Usage:
+        >> python vmware.py --endpoint vm_login --vcenter_username username --vcenter_passowrd pwd
+            --vcenter_url http://10.10.16.21/sdk
+        """
         assert self.session_id is not None
         payload = {'vcenter_username':self.vcenter_username, 'vcenter_password':\
                 self.vcenter_password, 'vcenter_url': self.vcenter_url}
@@ -60,6 +68,10 @@ class VM(VMWareBase):
 
 
     def get_all_vms_info(self):
+        """
+        Usage:
+        >> python vmware.py --endpoint get_all_vms_info
+        """
         assert self.session_id is not None
         print('Request ' + self.url + "/vm/-/" + self.session_id)
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()
@@ -67,6 +79,10 @@ class VM(VMWareBase):
         return resp
 
     def get_one_vm_info(self):
+        """
+        Usage:
+        >> python vmware.py --endpoint get_one_vm --vmname vm-32
+        """
         assert self.session_id is not None
         assert self.vmname is not None
         url = self.url + "/vm/" + self.vmname + "/-/" + self.session_id
@@ -76,6 +92,10 @@ class VM(VMWareBase):
         return resp
 
     def get_vm_attribute(self):
+        """
+        Usage:
+        >> python vmware.py --endpoint get_vm_attribute --vmname vm-32 --attr memory
+        """
         assert self.session_id is not None
         assert self.attr is not None
         assert self.vmname is not None
@@ -87,6 +107,11 @@ class VM(VMWareBase):
         return resp
 
     def change_vm_attribute(self):
+        """
+        Usage:
+        >> python vmware.py --endpoint change_vm_attribute --vmname vm-32
+            --attr memory --attr_key memorymb --attr_value 2097
+        """
         assert self.session_id is not None
         assert self.attr is not None
         assert self.vmname is not None
