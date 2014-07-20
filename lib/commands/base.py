@@ -11,6 +11,7 @@ class BaseCommand(object):
         self.cfg_parser = SafeConfigParser()
         os.path.abspath(CURRENT_DIR)
         os.chdir('..') 
+        os.chdir('..')
         config_path = os.path.abspath(CURRENT_DIR) 
         print('Config path ' + config_path)
         self.cfg_parser.read(config_path)
