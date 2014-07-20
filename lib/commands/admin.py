@@ -65,7 +65,7 @@ class Admin(BaseCommand):
         try:
             method = getattr(self, self.endpoint)
             data = method() #call the method specified in self.endpoint
-            print("Data type= " + type(data))
+            print("Data type= " + str(ype(data)))
             if self.csv:
                 print(self.to_csv(data))
         except AttributeError as e:
