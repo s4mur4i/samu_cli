@@ -1,5 +1,4 @@
 import requests
-import json
 from base import BaseCommand
 from configparser import SafeConfigParser
 
@@ -68,7 +67,6 @@ class VM(VMWareBase):
         try:
             method = getattr(self, self.endpoint)
             r = method() #call the method specified in self.endpoint
-            r = json.loads(r)
             if self.csv:
                 print(self.to_csv(r))
         except AttributeError as e:
