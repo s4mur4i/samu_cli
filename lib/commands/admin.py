@@ -69,6 +69,7 @@ class Admin(BaseCommand):
                 print(self.to_csv(data))
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
+            print(e)
 
  
     def logout(self):
