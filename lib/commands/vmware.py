@@ -66,7 +66,9 @@ class VM(VMWareBase):
             raise Exception("An endpoint must be defined")
         try:
             method = getattr(self, self.endpoint)
-            method() #call the method specified in self.endpoint
+            r = method() #call the method specified in self.endpoint
+            if self.to_csv:
+                print self.to_csv(r)
         except AttributeError as e:
             print(e)
             print("Please enter a correct REST endpoint")

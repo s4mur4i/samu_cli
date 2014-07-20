@@ -1,3 +1,4 @@
+import pandas
 import requests
 import os
 from configparser import SafeConfigParser
@@ -18,6 +19,10 @@ class BaseCommand(object):
         self.session_id = None
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
+    def to_csv(self, data):
+        pd = pandas.DateFrame(data)
+        return pd.to_csv()
+
     def create_parser(self):
         
         self.parser = argparse.ArgumentParser()
@@ -29,6 +34,7 @@ class BaseCommand(object):
                 default=self.app_base_url)
         self.parser.add_argument('--endpoint', default=None, help="REST endpoint to call")
         self.parser.add_argument('--session_id')
+        self.parser.add_argument('--to_csv')
         self.add_arguments()
         self.args = self.parser.parse_args(namespace=self)
 
