@@ -1,4 +1,5 @@
 import requests
+import json
 from base import BaseCommand
 
 
@@ -66,8 +67,9 @@ class Admin(BaseCommand):
             method = getattr(self, self.endpoint)
             data = method() #call the method specified in self.endpoint
             print("Data type= " + str(type(data)))
+            data = json.loads(data)
             if self.csv:
-                print(self.to_csv(data.items()))
+                print(self.to_csv(data))
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
             print(e)
