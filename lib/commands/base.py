@@ -9,11 +9,7 @@ class BaseCommand(object):
 
     def __init__(self, *args, **kwargs):
         self.cfg_parser = SafeConfigParser()
-        os.path.abspath(CURRENT_DIR)
-        os.chdir('../..') 
-        config_path = os.path.abspath(CURRENT_DIR) 
-        print('Config path ' + config_path)
-        self.cfg_parser.read(config_path)
+        self.cfg_parser.read('app_config.cfg')
         self.username = self.cfg_parser.get('app_level', 'username')
         self.password = self.cfg_parser.get('app_level', 'password') 
         self.app_base_url = self.cfg_parser.get('app_level', 'app_base_url')
