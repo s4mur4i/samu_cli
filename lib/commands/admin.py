@@ -67,7 +67,7 @@ class Admin(BaseCommand):
             data = method() #call the method specified in self.endpoint
             print("Data type= " + str(type(data)))
             if self.csv:
-                print(self.to_csv(data))
+                print(self.to_csv(data.items()))
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
             print(e)
