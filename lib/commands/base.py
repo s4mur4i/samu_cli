@@ -11,7 +11,7 @@ class BaseCommand(object):
         self.cfg_parser = SafeConfigParser()
         os.path.abspath(CURRENT_DIR)
         config_path = os.chdir('..') + '/app_config.cfg'
-        print 'Config path ' + config_path
+        print('Config path ' + config_path)
         self.cfg_parser.read(config_path)
         self.username = self.cfg_parser.get('app_level', 'username')
         self.password = self.cfg_parser.get('app_level', 'password') 
