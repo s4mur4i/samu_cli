@@ -17,6 +17,7 @@ class BaseCommand(object):
         self.app_base_url = self.cfg_parser.get('app_level', 'app_base_url')
         self.args = None
         self.session_id = None
+        self.to_csv = None
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
     def to_csv(self, data):
