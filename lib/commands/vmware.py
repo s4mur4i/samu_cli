@@ -67,7 +67,7 @@ class VM(VMWareBase):
         try:
             method = getattr(self, self.endpoint)
             r = method() #call the method specified in self.endpoint
-            if self.to_csv:
+            if self.csv:
                 print(self.to_csv(r))
         except AttributeError as e:
             print(e)
