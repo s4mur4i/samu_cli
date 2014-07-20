@@ -94,7 +94,7 @@ class Admin(BaseCommand):
         """
         Usage: 
         Updates a user and call to /admin/profile/user-id/-/session-id is sent
-        >> python admin.py --endpoint update_user_info --username user --email email --password pwd
+        >> python admin.py --endpoint update_user_info --username user --email email --password pwd --user_id 5
         """
         assert self.session_id is not None
         payload = {'username': self.username, 'email': self.email,'password': self.password}

@@ -11,7 +11,7 @@ class VMWareBase(BaseCommand):
         self.vcenter_url = self.cfg_parser.get('vmware', 'vcenter_url')
         self.url = self.app_base_url + '/vmware'
 
-    def add_arguments(self):
+    def add_argument(self):
         self.parser.add_argument('--email', help="Email of admin")
         self.parser.add_argument('--vcenter_username', help='VMware username',\
                 default=self.vcenter_username)
@@ -44,9 +44,14 @@ class VMWareBase(BaseCommand):
 class VM(VMWareBase):
     def __init__(self, *args, **kwargs):
         super(VM, self).__init__(args, kwargs)
+        #these will be populated by ArgumentParser
+        self.vmname = None
+        self.attr = None
+        self.attr_key = None
+        self.attr_value = None
 
-    def add_arguments(self):
-        super(VM, self).add_arguments()
+    def add_argument(self):
+        super(VM, self).add_argument()
         self.parser.add_argument('--vm', help='Information about virtual machine')
         self.parser.add_argument('--clone', help='Clones a machine from the moref, will have further options or maybe its own endpoint')
         self.parser.add_argument('--delete', help='Deletes the machine')
@@ -136,40 +141,40 @@ class Task(VMWareBase):
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(args, kwargs)
 
-    def add_arguments(self):
-        super(Task, self).add_arguments()
-        self.parser.add_arguments('--taskname')
+    def add_argument(self):
+        super(Task, self).add_argument()
+        self.parser.add_argument('--taskname')
 
 class Network(VMWareBase):
     def __init__(self, *args, **kwargs):
         super(Network, self).__init__(args, kwargs)
 
-    def add_arguments(self):
-        super(Network, self).add_arguments()
-        self.parser.add_arguments('--moref')
+    def add_argument(self):
+        super(Network, self).add_argument()
+        self.parser.add_argument('--moref')
 
 class Folder(VMWareBase):
     def __init__(self, *args, **kwargs):
         super(Folder, self).__init__(args, kwargs)
 
-    def add_arguments(self):
-        super(Folder, self).add_arguments()
-        self.parser.add_arguments('--moref', help='Information about specific folder')
-        self.parser.add_arguments('--create', help='Creates a folder in the root folder, if moref is given then in the requested folder')
-        self.parser.add_arguments('--delete', help='moref needs to be given and it deletes the folder')
-        self.parser.add_arguments('--modify', help='Placeholder for later maybe it will get an own endpoint')
+    def add_argument(self):
+        super(Folder, self).add_argument()
+        self.parser.add_argument('--moref', help='Information about specific folder')
+        self.parser.add_argument('--create', help='Creates a folder in the root folder, if moref is given then in the requested folder')
+        self.parser.add_argument('--delete', help='moref needs to be given and it deletes the folder')
+        self.parser.add_argument('--modify', help='Placeholder for later maybe it will get an own endpoint')
 
 
 class ResourcePool(VMWareBase):
     def __init__(self, *args, **kwargs):
         super(ResourcePool, self).__init__(args, kwargs)
 
-    def add_arguments(self):
-        super(ResourcePool, self).add_arguments()
-        self.parser.add_arguments('--moref', help='Information about specific resourcepool')
-        self.parser.add_arguments('--create', help='Create resourcepool in root folder, or if moref given then in resourcepool')
-        self.parser.add_arguments('--delete', help='moref needs to be given, and it deletes the resourcepool')
-        self.parser.add_arguments('--modify', help='Placeholder for later maybe it will get an own endpoint')
+    def add_argument(self):
+        super(ResourcePool, self).add_argument()
+        self.parser.add_argument('--moref', help='Information about specific resourcepool')
+        self.parser.add_argument('--create', help='Create resourcepool in root folder, or if moref given then in resourcepool')
+        self.parser.add_argument('--delete', help='moref needs to be given, and it deletes the resourcepool')
+        self.parser.add_argument('--modify', help='Placeholder for later maybe it will get an own endpoint')
 
 
 
