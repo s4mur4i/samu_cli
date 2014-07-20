@@ -21,7 +21,7 @@ class BaseCommand(object):
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
     def to_csv(self, data):
-        pd = pandas.DateFrame(data)
+        pd = pandas.DataFrame(data)
         return pd.to_csv()
 
     def create_parser(self):
