@@ -22,6 +22,7 @@ class BaseCommand(object):
         self.get_sessionid()
     def to_csv(self, data):
         pd = pandas.DataFrame(data)
+        print(pd)
         return pd.to_csv()
 
     def create_parser(self):
