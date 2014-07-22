@@ -243,12 +243,6 @@ class Admin(BaseCommand):
 
 
 
-
-
-        
-        
-        
-
 if __name__ == "__main__":
     a = Admin()
     a.execute()

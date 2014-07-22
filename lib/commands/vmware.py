@@ -84,7 +84,7 @@ class VM(VMWareBase):
         print('Request ' + self.url + "/vm/-/" + self.session_id)
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()
         print(resp)
-        return resp
+        return resp, None, resp.keys()
 
     def get_one_vm_info(self):
         """
@@ -97,7 +97,7 @@ class VM(VMWareBase):
         print('Requesitng ' + url)
         resp = requests.get(url).json()
         print(resp)
-        return resp
+        return resp, None, resp.keys()
 
     def get_vm_attribute(self):
         """
