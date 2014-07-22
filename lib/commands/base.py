@@ -20,8 +20,13 @@ class BaseCommand(object):
         self.csv = None
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
-    def to_csv(self, data):
-        pd = pandas.DataFrame(data)
+    def to_csv(self, data, rows, values):
+        """
+        data is usually json object returned, rows is number of rows
+        whereas values is usually pertinent json object keys that can
+        be used as columns
+        """
+        pd = pandas.DataFrame(data, index=rows, columns=values)
         print(pd)
         return pd.to_csv()
 
@@ -46,6 +51,7 @@ class BaseCommand(object):
         url = self.app_base_url + "/admin/login"
         resp = requests.post(url, data=payload)
         json = resp.json()
+        row = 0
         print(json)
         if json:
             #verify that it's a succesful login
@@ -58,7 +64,7 @@ class BaseCommand(object):
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
-        return json
+        return json, row, json.keys()
 
 
     def add_arguments(self):

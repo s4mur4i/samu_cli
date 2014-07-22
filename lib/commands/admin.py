@@ -54,9 +54,10 @@ class Admin(BaseCommand):
         payload = {'username': self.username, 'email': self.email,
                 'password': self.password}
         resp = requests.post(self.admin_url, data=payload)
-        json = resp.json()
-        assert json['result'] == 'success'
-        return json
+        data = resp.json()
+        row = 0
+        assert data['result'] == 'success'
+        return data, row, data.keys()
 
     def execute(self):
         self.create_parser()
@@ -64,10 +65,10 @@ class Admin(BaseCommand):
             raise Exception("An endpoint must be defined")
         try:
             method = getattr(self, self.endpoint)
-            data = method() #call the method specified in self.endpoint
+            data, rows, keys = method() #call the method specified in self.endpoint
             print("Data type= " + str(type(data)))
             if self.csv:
-                print(self.to_csv(data))
+                print(self.to_csv(data, rows, keys))
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
             print(e)
