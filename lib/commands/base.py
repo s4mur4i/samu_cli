@@ -1,6 +1,8 @@
 import pandas
 import requests
 import os
+import sys
+import csv
 from configparser import SafeConfigParser
 import argparse
 
@@ -26,9 +28,11 @@ class BaseCommand(object):
         whereas values is usually pertinent json object keys that can
         be used as columns
         """
-        pd = pandas.DataFrame(data, index=rows, columns=values)
-        print(pd)
-        return pd.to_csv()
+        writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = values)
+        return writer.writerow(data)
+        #pd = pandas.DataFrame(data, index=rows, columns=values)
+        #print(pd)
+        #return pd.to_csv()
 
     def create_parser(self):
         
