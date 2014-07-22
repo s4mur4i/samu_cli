@@ -5,7 +5,7 @@ import sys
 import csv
 from configparser import SafeConfigParser
 import argparse
-
+from prettytable import PrettyTable
 
 CURRENT_DIR = os.path.dirname(__file__)
 class BaseCommand(object):
@@ -28,7 +28,13 @@ class BaseCommand(object):
         whereas values is usually pertinent json object keys that can
         be used as columns
         """
+        row = PrettyTable()
+        row.field_names = data.keys()
+        row.add_row(data.values())
+        print row.get_string()
+
         writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = values)
+        writer.writeheader()
         return writer.writerow(data)
         #pd = pandas.DataFrame(data, index=rows, columns=values)
         #print(pd)
