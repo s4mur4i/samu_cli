@@ -51,7 +51,7 @@ class BaseCommand(object):
         url = self.app_base_url + "/admin/login"
         resp = requests.post(url, data=payload)
         json = resp.json()
-        row = 0
+        rows= [0]
         print(json)
         if json:
             #verify that it's a succesful login
@@ -64,7 +64,7 @@ class BaseCommand(object):
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
-        return json, row, json.keys()
+        return json, rows, json.keys()
 
 
     def add_arguments(self):
