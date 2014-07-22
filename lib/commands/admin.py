@@ -83,7 +83,9 @@ class Admin(BaseCommand):
         resp = requests.get(self.admin_url + '/logoff')
         self.session_id = None
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        data = resp.json()
+        return data, rows, data.keys()
     def get_user_info(self):
         """
         Usage: 
@@ -93,7 +95,9 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
         print(resp.json())
-        return resp.json()
+        data = resp.json()
+        rows = [0]
+        return data, rows, data.keys() 
     
     def update_user_info(self):
         """
@@ -106,7 +110,8 @@ class Admin(BaseCommand):
         print(payload)
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id, data=payload)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
 
     def get_profile(self):
         """
@@ -119,7 +124,11 @@ class Admin(BaseCommand):
         assert self.user_id is not None
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
         print(resp.json())
-        return resp.json()
+        data = resp.json()
+        rows = [0]
+
+        return data, rows, data.keys()
+
     def delete_profile(self):
         """
         Usage:
@@ -130,7 +139,8 @@ class Admin(BaseCommand):
         assert self.user_id is not None
         resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
     def list_users(self):
         """
         Usage:
@@ -149,7 +159,8 @@ class Admin(BaseCommand):
         """
         resp = requests.get(self.admin_url + "/list/" + self.username)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
 
     def assign_userid_to_role(self):
         """
@@ -194,7 +205,8 @@ class Admin(BaseCommand):
         print(url)
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
     def set_user_config(self):
         """
         Usage:
@@ -208,7 +220,8 @@ class Admin(BaseCommand):
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
                 '/configs/-/' + self.session_id, data=payload)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
 
     def delete_user_config(self):
         """
@@ -221,7 +234,8 @@ class Admin(BaseCommand):
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
                 '/configs/-/' + self.session_id, data=payload)
         print(resp.json())
-        return resp.json()
+        rows = [0]
+        return resp.json(), rows, resp.keys()
 
 
 

@@ -37,8 +37,9 @@ class VMWareBase(BaseCommand):
         resp = requests.post(url, data=payload)
         resp = resp.json()
         print(resp)
+        rows = [0]
         assert resp['result'] == 'success'
-        return resp 
+        return resp, rows, resp.keys()
 
 
 class VM(VMWareBase):
