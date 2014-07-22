@@ -55,9 +55,9 @@ class Admin(BaseCommand):
                 'password': self.password}
         resp = requests.post(self.admin_url, data=payload)
         data = resp.json()
-        row = 0
+        rows= [0]
         assert data['result'] == 'success'
-        return data, row, data.keys()
+        return data, rows, data.keys()
 
     def execute(self):
         self.create_parser()
