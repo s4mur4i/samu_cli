@@ -31,7 +31,7 @@ class BaseCommand(object):
         row = PrettyTable()
         row.field_names = data.keys()
         row.add_row(data.values())
-        print row.get_string()
+        print(row.get_string())
 
         writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = values)
         writer.writeheader()
