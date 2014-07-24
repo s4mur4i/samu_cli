@@ -29,8 +29,8 @@ class BaseCommand(object):
         be used as columns
         """
         row = PrettyTable()
-        row.max_width = 5
         row.field_names = data.keys()
+        row.max_width = 5
         row.add_row(data.values())
         print(row.get_string())
 
