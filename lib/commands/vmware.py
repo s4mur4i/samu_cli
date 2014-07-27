@@ -28,6 +28,8 @@ class VMWareBase(BaseCommand):
         >> python vmware.py --endpoint vm_login --vcenter_username username --vcenter_passowrd pwd
             --vcenter_url http://10.10.16.21/sdk
         """
+        if not self.session:
+            self.login()
         assert self.session_id is not None
         payload = {'vcenter_username':self.vcenter_username, 'vcenter_password':\
                 self.vcenter_password, 'vcenter_url': self.vcenter_url}
