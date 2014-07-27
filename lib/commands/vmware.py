@@ -74,12 +74,16 @@ class VM(VMWareBase):
             print(e)
             print("Please enter a correct REST endpoint")
 
-
+    def verify_login(self):
+        if not self.session_id:
+            print("Wait, trying to login first...")
+            self.vm_login()
     def get_all_vms_info(self):
         """
         Usage:
         >> python vmware.py --endpoint get_all_vms_info
         """
+        self.verify_login()
         assert self.session_id is not None
         print('Request ' + self.url + "/vm/-/" + self.session_id)
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()
@@ -91,6 +95,7 @@ class VM(VMWareBase):
         Usage:
         >> python vmware.py --endpoint get_one_vm --vmname vm-32
         """
+        self.verify_login()
         assert self.session_id is not None
         assert self.vmname is not None
         url = self.url + "/vm/" + self.vmname + "/-/" + self.session_id
@@ -104,6 +109,7 @@ class VM(VMWareBase):
         Usage:
         >> python vmware.py --endpoint get_vm_attribute --vmname vm-32 --attr memory
         """
+        self.verify_login()
         assert self.session_id is not None
         assert self.attr is not None
         assert self.vmname is not None
@@ -120,6 +126,7 @@ class VM(VMWareBase):
         >> python vmware.py --endpoint change_vm_attribute --vmname vm-32
             --attr memory --attr_key memorymb --attr_value 2097
         """
+        self.verify_login()
         assert self.session_id is not None
         assert self.attr is not None
         assert self.vmname is not None

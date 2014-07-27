@@ -72,8 +72,12 @@ class Admin(BaseCommand):
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
             print(e)
-
- 
+    
+    def verify_login(self):
+        if not self.session_id:
+            print("Wait, trying to login first...")
+            self.login()
+     
     def logout(self):
         """
         Usage:
@@ -92,6 +96,7 @@ class Admin(BaseCommand):
         User needs to be logged in. Call to /admin/profile/-/session-id is sent
         >> python admin.py --endpoint get_user_info
         """
+        self.verify_login()
         assert self.session_id is not None
         resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
         print(resp.json())
@@ -105,6 +110,8 @@ class Admin(BaseCommand):
         Updates a user and call to /admin/profile/user-id/-/session-id is sent
         >> python admin.py --endpoint update_user_info --username user --email email --password pwd --user_id 5
         """
+
+        self.verify_login()
         assert self.session_id is not None
         payload = {'username': self.username, 'email': self.email,'password': self.password}
         print(payload)
@@ -120,6 +127,8 @@ class Admin(BaseCommand):
         needs to be logged in.
         >> python admin.py --endpoint get_profile --user_id 5
         """
+
+        self.verify_login()
         assert self.session_id is not None
         assert self.user_id is not None
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
@@ -135,6 +144,8 @@ class Admin(BaseCommand):
         Deletes a profile and call to /admin/profile/user-id/session-id is sent
         >> python admin.py --endpoint delete_profile --user_id 5
         """
+
+        self.verify_login()
         assert self.session_id is not None
         assert self.user_id is not None
         resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
@@ -202,6 +213,8 @@ class Admin(BaseCommand):
         /admin/profile/user-id/configs/-/session-id is sent
         >> python admin.py --endpoint get_user_configs --user_id 3
         """
+
+        self.verify_login()
         url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id)
@@ -216,6 +229,8 @@ class Admin(BaseCommand):
         /admin/profile/user-id/configs/-/session-id is sent
         >> python admin.py --endpoint set_user_config --user_id 2 --name name --value value
         """
+
+        self.verify_login()
         assert self.session_id is not None
         assert self.user_id is not None
         payload = {'name': self.name, 'value': self.value}
@@ -233,6 +248,9 @@ class Admin(BaseCommand):
         /admin/profile/user-id/configs/-/session-id is sent
         >> python admin.py --endpoint delete_user_configs --user_id 4 --name name
         """
+
+        self.verify_login()
+        assert self.session_id is not None
         payload = {'name': self.name}
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
                 '/configs/-/' + self.session_id, data=payload)
