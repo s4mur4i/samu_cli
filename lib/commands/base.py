@@ -116,7 +116,7 @@ class BaseCommand(object):
                 self.session_timestamp = token.split(splitter)[1]
             else:
                 self.session_id = token
-                self.session_timestamp = datetime.now() - timedelta(days=30)
+                self.session_timestamp = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d %H:%M")
                 session_file.close()
 
 
