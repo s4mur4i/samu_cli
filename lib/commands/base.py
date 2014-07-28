@@ -77,7 +77,7 @@ class BaseCommand(object):
                 print("Going to write sessionid in file")
                 session_file = open(self.session_file_path, mode='w', encoding='utf-8')
                 now = datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%m:%S")
+                timestamp = now.strftime("%Y-%m-%d %H:%m")
                 session_file.write(self.session_id + "====" + timestamp)
                 session_file.close()
             else:
@@ -96,7 +96,7 @@ class BaseCommand(object):
         print("Session id= " + self.session_id)
         print("Timestamp= " + self.session_timestamp)
         timestamp = datetime.strptime(self.session_timestamp, \
-                '%Y-%m-%d %H:%m:%S')
+                '%Y-%m-%d %H:%m')
         now = datetime.now()
         delta = now - timestamp
         secs_in_one_hour = 60 * 60
@@ -116,8 +116,8 @@ class BaseCommand(object):
                 self.session_timestamp = token.split(splitter)[1]
             else:
                 self.session_id = token
-                self.session_timestamp = "0000-00-00 00:00:00"
-            session_file.close()
+                self.session_timestamp = datetime.now() - timedelta(days=30)
+                session_file.close()
 
 
 # = BaseCommand()
