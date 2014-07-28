@@ -93,6 +93,8 @@ class BaseCommand(object):
 
     def is_session_valid(self):
         self.get_sessionid()
+        print("Session id= " + self.session_id)
+        print("Timestamp= " + self.session_timestamp)
         timestamp = datetime.strptime(self.session_timestamp, \
                 '%Y-%m-%d %H:%m:%S')
         now = datetime.now()
