@@ -95,8 +95,7 @@ class BaseCommand(object):
         self.get_sessionid()
         print("Session id= " + self.session_id)
         print("Timestamp= " + self.session_timestamp)
-        timestamp = datetime.strptime(self.session_timestamp, \
-                '%Y-%m-%d %H:%m')
+        timestamp = datetime.strptime(self.session_timestamp, '%Y-%m-%d %H:%M')
         now = datetime.now()
         delta = now - timestamp
         secs_in_one_hour = 60 * 60
