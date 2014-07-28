@@ -22,6 +22,7 @@ class BaseCommand(object):
         self.csv = None
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
+        self.session_timestamp = None
     def to_csv(self, data, rows, values):
         """
         data is usually json object returned, rows is number of rows
@@ -64,6 +65,9 @@ class BaseCommand(object):
         json = resp.json()
         rows= [0]
         print(json)
+        if self.is_session_valid():
+            self.session_id = json['session_id']
+            json, rows, json.keys()
         if json:
             #verify that it's a succesful login
             assert json['result'] == 'success'
@@ -71,7 +75,9 @@ class BaseCommand(object):
                 self.session_id = json['sessionid']
                 print("Going to write sessionid in file")
                 session_file = open(self.session_file_path, mode='w', encoding='utf-8')
-                session_file.write(self.session_id)
+                now = datetime.now()
+                timestamp = now.strftime("%Y-%m-%d %H:%m:%S")
+                session_file.write(self.session_id + "=" + timestamp)
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
@@ -83,6 +89,16 @@ class BaseCommand(object):
         Entrypoint for subclasses to add arguments
         """
         pass
+
+    def is_session_valid(self):
+        self.get_sessionid()
+        timestamp = datetime.strptime(self.session_timestamp, \
+                '%Y-%m-%d %H:%m:%S')
+        now = datetime.now()
+        delta = now - timestamp
+        secs_in_one_hour = 60 * 60
+        return delta.total_seconds() < secs_in_one_hour
+
     def get_sessionid(self):
         session_file = None 
         try:
@@ -90,7 +106,9 @@ class BaseCommand(object):
         except IOError:
             self.session_id = None
         else:
-            self.session_id = session_file.read() or None
+            token = session_file.read()
+            self.session_id = token.split("=")[0]
+            self.session_timestamp = token.split("=")[1]
             session_file.close()
 
 
