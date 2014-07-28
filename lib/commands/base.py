@@ -4,6 +4,7 @@ import os
 import sys
 import csv
 from configparser import SafeConfigParser
+from datetime import datetime
 import argparse
 from prettytable import PrettyTable
 
