@@ -74,6 +74,7 @@ class VM(VMWareBase):
         except AttributeError as e:
             print(e)
             print("Please enter a correct REST endpoint")
+            print(self.parser.print_help())
 
     def check_session_validity(self):
         if not self.is_session_valid():
