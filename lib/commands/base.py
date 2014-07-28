@@ -77,7 +77,7 @@ class BaseCommand(object):
                 session_file = open(self.session_file_path, mode='w', encoding='utf-8')
                 now = datetime.now()
                 timestamp = now.strftime("%Y-%m-%d %H:%m:%S")
-                session_file.write(self.session_id + "=" + timestamp)
+                session_file.write(self.session_id + "====" + timestamp)
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
@@ -107,8 +107,13 @@ class BaseCommand(object):
             self.session_id = None
         else:
             token = session_file.read()
-            self.session_id = token.split("=")[0]
-            self.session_timestamp = token.split("=")[1]
+            splitter = "===="
+            if splitter in token:
+                self.session_id = token.split(splitter)[0]
+                self.session_timestamp = token.split(splitter)[1]
+            else:
+                self.session_id = token
+                self.session_timestamp = "0000-00-00 00:00:00"
             session_file.close()
 
 
