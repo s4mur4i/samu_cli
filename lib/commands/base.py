@@ -38,6 +38,7 @@ class BaseCommand(object):
         row.max_width = 5
         for item in data:
             row.add_row(item.values())
+        print(row)
 
         writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)
         writer.writeheader()
