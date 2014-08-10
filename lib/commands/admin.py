@@ -56,7 +56,6 @@ class Admin(BaseCommand):
         resp = requests.post(self.admin_url, data=payload)
         data = resp.json()
         rows= [0]
-        assert data['result'] == 'success'
         return data, rows, data.keys()
 
     def execute(self):
