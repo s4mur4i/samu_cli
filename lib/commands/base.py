@@ -35,7 +35,7 @@ class BaseCommand(object):
         field_names = list(data[0].keys())
         print("Field names ====" + str(field_names))
         row.field_names = field_names
-        row.max_width = 10
+        row.max_width = 80
         for item in data:
             row.add_row(list(item.values()))
         print(row)
