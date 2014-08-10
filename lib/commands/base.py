@@ -37,7 +37,7 @@ class BaseCommand(object):
         for item in data:
             row.add_row(item)
 
-        writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = values)
+        writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = [item for item in data])
         writer.writeheader()
         return writer.writerow(data)
         #pd = pandas.DataFrame(data, index=rows, columns=values)
