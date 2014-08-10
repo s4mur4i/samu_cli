@@ -35,9 +35,9 @@ class BaseCommand(object):
         field_names = list(data[0].keys())
         print("Field names ====" + str(field_names))
         row.field_names = field_names
-        row.max_width = 5
+        row.max_width = 10
         for item in data:
-            row.add_row(item.values())
+            row.add_row(list(item.values()))
         print(row)
 
         writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)
