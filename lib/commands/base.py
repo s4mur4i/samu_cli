@@ -32,12 +32,14 @@ class BaseCommand(object):
         """
         print('Data ====' + str(data))
         row = PrettyTable()
-        row.field_names = data[0].keys()
+        field_names = data[0].keys()
+        print("Field names ====" + str(field_names))
+        row.field_names = field_names
         row.max_width = 5
         for item in data:
             row.add_row(item)
 
-        writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = data[0].keys())
+        writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = field_names)
         writer.writeheader()
         return writer.writerow(data)
         #pd = pandas.DataFrame(data, index=rows, columns=values)
