@@ -41,7 +41,9 @@ class BaseCommand(object):
 
         writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = field_names)
         writer.writeheader()
-        return writer.writerow(data)
+        for item in data:
+            writer.writerow(item)
+        return writer
         #pd = pandas.DataFrame(data, index=rows, columns=values)
         #print(pd)
         #return pd.to_csv()
