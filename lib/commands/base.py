@@ -30,7 +30,7 @@ class BaseCommand(object):
         whereas values is usually pertinent json object keys that can
         be used as columns
         """
-        print('Data ====' + str(ata))
+        print('Data ====' + str(data))
         row = PrettyTable()
         row.field_names = data[0].keys()
         row.max_width = 5
