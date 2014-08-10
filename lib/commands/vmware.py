@@ -104,7 +104,7 @@ class VM(VMWareBase):
         print('Requesitng ' + url)
         resp = requests.get(url).json()
         print(resp)
-        return resp, None, resp.keys()
+        return resp['result'], None, resp['result'][0].keys()
 
     def get_vm_attribute(self):
         """

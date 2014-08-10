@@ -64,10 +64,10 @@ class Admin(BaseCommand):
             raise Exception("An endpoint must be defined")
         try:
             method = getattr(self, self.endpoint)
-            data, rows, keys = method() #call the method specified in self.endpoint
+            data = method() #call the method specified in self.endpoint
             print("Data type= " + str(type(data)))
             if self.csv:
-                print(self.to_csv(data, rows, keys))
+                print(self.to_csv(data))
         except AttributeError as e:
             print("Please enter a correct REST endpoint")
             print(e)

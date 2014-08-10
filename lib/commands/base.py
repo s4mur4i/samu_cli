@@ -24,17 +24,17 @@ class BaseCommand(object):
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
         self.session_timestamp = None
-    def to_csv(self, data, rows, values):
+    def to_csv(self, data):
         """
         data is usually json object returned, rows is number of rows
         whereas values is usually pertinent json object keys that can
         be used as columns
         """
         row = PrettyTable()
-        row.field_names = data.keys()
+        row.field_names = data[0].keys()
         row.max_width = 5
-        row.add_row(data.values())
-        print(row.get_string())
+        for item in data:
+            row.add_row(item)
 
         writer = csv.DictWriter(sys.stdout, delimiter=',', fieldnames = values)
         writer.writeheader()
