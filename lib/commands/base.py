@@ -32,7 +32,7 @@ class BaseCommand(object):
         """
         print('Data ====' + str(data))
         row = PrettyTable()
-        field_names = data[0].keys()
+        field_names = list(data[0].keys())
         print("Field names ====" + str(field_names))
         row.field_names = field_names
         row.max_width = 5
