@@ -39,7 +39,7 @@ class VMWareBase(BaseCommand):
         resp = resp.json()
         print(resp)
         rows = [0]
-        assert resp['result'] == 'success'
+        assert resp['status'] == 'success'
         return resp, rows, resp.keys()
 
 

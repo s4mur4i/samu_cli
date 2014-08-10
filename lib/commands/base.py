@@ -68,6 +68,7 @@ class BaseCommand(object):
         print(json)
         if json:
             #verify that it's a succesful login
+            assert json['status'] == 'success'
             if 'sessionid' in json.keys():
                 self.session_id = json['sessionid']
                 print("Going to write sessionid in file")
