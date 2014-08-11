@@ -118,8 +118,8 @@ class VM(VMWareBase):
         url = self.url + "/vm/" + self.vmname + "/" + self.attr + "/-/" + self.session_id
         print("Requesting " + url)
         resp = requests.get(url).json()
-        assert resp['status'] == 'success'
         print(resp)
+        assert resp['status'] == 'success'
         return resp['result']
 
     def change_vm_attribute(self):
@@ -140,8 +140,8 @@ class VM(VMWareBase):
         print("Requesting " + url)
         print("Sending data " + str(payload))
         resp = requests.put(url, data=payload).json()
-        assert resp['status'] == 'success'
         print(resp)
+        assert resp['status'] == 'success'
         return resp['result']
 
 
