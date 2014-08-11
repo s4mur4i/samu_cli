@@ -24,6 +24,27 @@ class BaseCommand(object):
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
         self.session_timestamp = None
+
+    def output(self, to_csv=False, to_shell=False):
+        print('Data ====' + str(data))
+        try:
+            if data and data[0]:
+                field_names = list(data[0].keys())
+        except:
+            raise Exception("Data disctionary not correctly defined")
+        if to_shell:
+            table = PrettyTable()
+            print("Field names ====" + str(field_names))
+            table.field_names = field_names
+            table.max_width = 80
+            for item in data:
+                table.add_row(list(item.values()))
+            print(table)
+        if to_csv:
+            writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)
+            writer.writeheader()
+            for item in data:
+                writer.writerow(item) 
     def to_csv(self, data):
         """
         data is usually json object returned, rows is number of rows

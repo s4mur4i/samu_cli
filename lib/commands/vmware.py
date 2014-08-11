@@ -52,8 +52,7 @@ class VM(VMWareBase):
         self.attr_key = None
         self.attr_value = None
 
-    def add_argument(self):
-        super(VM, self).add_argument()
+    def add_arguments(self):
         self.parser.add_argument('--vm', help='Information about virtual machine')
         self.parser.add_argument('--clone', help='Clones a machine from the moref, will have further options or maybe its own endpoint')
         self.parser.add_argument('--delete', help='Deletes the machine')
@@ -95,7 +94,7 @@ class VM(VMWareBase):
     def get_one_vm_info(self):
         """
         Usage:
-        >> python vmware.py --endpoint get_one_vm --vmname vm-32
+        >> python vmware.py --endpoint get_one_vm_info --vmname vm-32
         """
         self.check_session_validity()
         assert self.session_id is not None
