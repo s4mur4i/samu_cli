@@ -102,8 +102,8 @@ class VM(VMWareBase):
         url = self.url + "/vm/" + self.vmname + "/-/" + self.session_id
         print('Requesitng ' + url)
         resp = requests.get(url).json()
-        assert resp['status'] == 'success'
         print(resp)
+        assert resp['status'] == 'success'
         return resp['result']
 
     def get_vm_attribute(self):
