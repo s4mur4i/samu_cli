@@ -26,7 +26,6 @@ class BaseCommand(object):
         self.session_timestamp = None
 
     def output(self, to_csv=False, to_shell=False):
-        print('Data ====' + str(data))
         try:
             if data and data[0]:
                 field_names = list(data[0].keys())
@@ -34,7 +33,6 @@ class BaseCommand(object):
             raise Exception("Data disctionary not correctly defined")
         if to_shell:
             table = PrettyTable()
-            print("Field names ====" + str(field_names))
             table.field_names = field_names
             table.max_width = 80
             for item in data:
