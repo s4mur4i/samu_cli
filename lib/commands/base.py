@@ -20,18 +20,19 @@ class BaseCommand(object):
         self.app_base_url = self.cfg_parser.get('app_level', 'app_base_url')
         self.args = None
         self.session_id = None
-        self.csv = None
+        self.to_csv = None
+        self.to_table = None
         self.session_file_path = os.path.join(CURRENT_DIR, 'session_info.txt')
         self.get_sessionid()
         self.session_timestamp = None
 
-    def output(self, to_csv=False, to_shell=False):
+    def output(self, to_csv=False, to_table=False):
         try:
             if data and data[0]:
                 field_names = list(data[0].keys())
         except:
             raise Exception("Data disctionary not correctly defined")
-        if to_shell:
+        if to_table:
             table = PrettyTable()
             table.field_names = field_names
             table.max_width = 80
@@ -50,8 +51,7 @@ class BaseCommand(object):
         try:
             method = getattr(self, self.endpoint)
             data = method() #call the method specified in self.endpoint
-            if self.csv:
-                print(self.to_csv(data))
+            print(self.output(data, self.to_csv, self.to_table))
         except AttributeError as e:
             print(e)
             print("Please enter a correct REST endpoint")
