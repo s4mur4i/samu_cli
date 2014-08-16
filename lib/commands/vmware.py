@@ -126,7 +126,7 @@ class VM(VMWareBase):
         """
         Usage:
         >> python vmware.py --endpoint change_vm_attribute --vmname vm-32
-            --attr memory --attr_key memorymb --attr_value 2097
+            --attr memory --attr_key memory --attr_value 2097
         """
         self.check_session_validity()
         assert self.session_id is not None
