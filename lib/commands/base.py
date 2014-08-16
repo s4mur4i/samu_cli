@@ -44,20 +44,7 @@ class BaseCommand(object):
             writer.writeheader()
             for item in data:
                 writer.writerow(item) 
-    def execute(self):
-        self.create_parser()
-        if not self.endpoint:
-            raise Exception("An endpoint must be defined")
-        try:
-            method = getattr(self, self.endpoint)
-            data = method() #call the method specified in self.endpoint
-            print(self.output(data, self.to_csv, self.to_table))
-        except AttributeError as e:
-            print(e)
-            print("Please enter a correct REST endpoint")
-            print(self.parser.print_help())
-
-
+  
     def to_csv(self, data):
         """
         data is usually json object returned, rows is number of rows
