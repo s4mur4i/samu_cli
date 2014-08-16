@@ -38,6 +38,7 @@ class BaseCommand(object):
             table.max_width = 80
             for item in data:
                 table.add_row(list(item.values()))
+            print('-' * 80)
             print(table)
         if to_csv:
             writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)

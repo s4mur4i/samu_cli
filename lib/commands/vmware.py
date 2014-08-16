@@ -68,7 +68,7 @@ class VM(VMWareBase):
         try:
             method = getattr(self, self.endpoint)
             data = method() #call the method specified in self.endpoint
-            print(self.output(data, self.to_csv, self.to_table))
+            self.output(data, self.to_csv, self.to_table)
         except AttributeError as e:
             print(e)
             print("Please enter a correct REST endpoint")
