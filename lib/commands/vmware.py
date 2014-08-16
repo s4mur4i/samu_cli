@@ -85,7 +85,7 @@ class VM(VMWareBase):
         """
         self.check_session_validity()
         assert self.session_id is not None
-        print('Request ' + self.url + "/vm/-/" + self.session_id)
+        print('Requesting: ' + self.url + "/vm/-/" + self.session_id)
         resp = requests.get(self.url + "/vm/-/" + self.session_id).json()
         print(resp)
         return resp['result']
@@ -99,7 +99,7 @@ class VM(VMWareBase):
         assert self.session_id is not None
         assert self.vmname is not None
         url = self.url + "/vm/" + self.vmname + "/-/" + self.session_id
-        print('Requesitng ' + url)
+        print('Requesitng: ' + url)
         resp = requests.get(url).json()
         print(resp)
         assert resp['status'] == 'success'
@@ -115,7 +115,7 @@ class VM(VMWareBase):
         assert self.attr is not None
         assert self.vmname is not None
         url = self.url + "/vm/" + self.vmname + "/" + self.attr + "/-/" + self.session_id
-        print("Requesting " + url)
+        print("Requesting: " + url)
         resp = requests.get(url).json()
         print(resp)
         assert resp['status'] == 'success'
@@ -136,7 +136,7 @@ class VM(VMWareBase):
         #and self.attr_value can be '4097
         payload = { self.attr_key : self.attr_value }
         url = self.url + "/vm/" + self.vmname + "/" + self.attr + "/-/" + self.session_id
-        print("Requesting " + url)
+        print("Requesting: " + url)
         print("Sending data " + str(payload))
         resp = requests.put(url, data=payload).json()
         print(resp)
