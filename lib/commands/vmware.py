@@ -74,6 +74,15 @@ class VM(VMWareBase):
             print("Please enter a correct REST endpoint")
             print(self.parser.print_help())
 
+    def show_all(self):
+        print("""
+                1- get_all_vms_info
+                2- get_one_vm_info
+                3- get_vm_attribute
+                4- change_vm_attribute
+                5- vm_login
+            """)
+
     def check_session_validity(self):
         if not self.is_session_valid():
             print("Wait, trying to login first...")

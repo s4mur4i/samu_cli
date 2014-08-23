@@ -38,7 +38,6 @@ class BaseCommand(object):
             table.max_width = 80
             for item in data:
                 table.add_row(list(item.values()))
-            print('-' * 80)
             print(table)
         if to_csv:
             writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)
@@ -46,31 +45,6 @@ class BaseCommand(object):
             for item in data:
                 writer.writerow(item) 
   
-    def to_csv(self, data):
-        """
-        data is usually json object returned, rows is number of rows
-        whereas values is usually pertinent json object keys that can
-        be used as columns
-        """
-        print('Data ====' + str(data))
-        row = PrettyTable()
-        field_names = list(data[0].keys())
-        print("Field names ====" + str(field_names))
-        row.field_names = field_names
-        row.max_width = 80
-        for item in data:
-            row.add_row(list(item.values()))
-        print(row)
-
-        writer = csv.DictWriter(sys.stdout, delimiter=';', fieldnames = field_names)
-        writer.writeheader()
-        for item in data:
-            writer.writerow(item)
-        return writer
-        #pd = pandas.DataFrame(data, index=rows, columns=values)
-        #print(pd)
-        #return pd.to_csv()
-
     def create_parser(self):
         
         self.parser = argparse.ArgumentParser()
