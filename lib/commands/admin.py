@@ -102,7 +102,7 @@ class Admin(BaseCommand):
         >> python admin.py --endpoint logout
         TODO: Remove sesion from session_info.txt on logout.
         """
-        resp = requests.get(self.admin_url + '/logoff')
+        resp = requests.get(self.admin_url + '/logoff').json()
         self.session_id = None
         print(resp)
         return resp['result']
@@ -114,7 +114,7 @@ class Admin(BaseCommand):
         """
         self.verify_login()
         assert self.session_id is not None
-        resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/-/' + self.session_id).json()
         print(resp)
         return resp['result']
     
@@ -129,7 +129,7 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         payload = {'username': self.username, 'email': self.email,'password': self.password}
         print(payload)
-        resp = requests.post(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id, data=payload)
+        resp = requests.post(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id, data=payload).json()
         print(resp)
         return resp['result']
 
@@ -144,7 +144,7 @@ class Admin(BaseCommand):
         self.verify_login()
         assert self.session_id is not None
         assert self.user_id is not None
-        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id).json()
         print(resp)
         return resp['result']
 
@@ -158,7 +158,7 @@ class Admin(BaseCommand):
         self.verify_login()
         assert self.session_id is not None
         assert self.user_id is not None
-        resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
+        resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id).json()
         print(resp)
         return resp['result']
 
@@ -168,7 +168,7 @@ class Admin(BaseCommand):
         Lists users and a call to /admin/list is sent
         >> pyhton admin.py --endpoint list_users
         """
-        resp = requests.get(self.admin_url + " /list")
+        resp = requests.get(self.admin_url + " /list").json()
         print(resp)
         return resp['result']
 
@@ -178,7 +178,7 @@ class Admin(BaseCommand):
         Gets list of one user and call to /admin/list/username is sent 
         >> python admin.py --endpoint get_one_user --username someuser
         """
-        resp = requests.get(self.admin_url + "/list/" + self.username)
+        resp = requests.get(self.admin_url + "/list/" + self.username).json()
         print(resp)
         return resp['result']
 
@@ -189,7 +189,7 @@ class Admin(BaseCommand):
         >> python admin.py --endpoint assign_userid_to_role --user_id 4 --role somerole
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        resp = requests.post(self.admin_url + '/roles', data=payload)
+        resp = requests.post(self.admin_url + '/roles', data=payload).json()
         print(resp)
         return resp['result']
     def delete_role(self):
@@ -200,7 +200,7 @@ class Admin(BaseCommand):
 
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        resp = requests.delete(self.admin_url + '/roles')
+        resp = requests.delete(self.admin_url + '/roles').json()
         print(resp)
         return resp['result']
     def get_users_for_role(self):
@@ -211,7 +211,7 @@ class Admin(BaseCommand):
         Usage:
         >> python admin.py --endpoint get_users_for_role --role somerole
         """
-        resp = requests.get(self.admin_url + '/roles/' + self.role)
+        resp = requests.get(self.admin_url + '/roles/' + self.role).json()
         print(resp)
         return resp['result']
     def get_user_configs(self):
@@ -225,7 +225,7 @@ class Admin(BaseCommand):
         self.verify_login()
         url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
-        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id)
+        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id).json()
         print(resp)
         return resp['result']
 
@@ -242,7 +242,7 @@ class Admin(BaseCommand):
         assert self.user_id is not None
         payload = {'name': self.name, 'value': self.value}
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
-                '/configs/-/' + self.session_id, data=payload)
+                '/configs/-/' + self.session_id, data=payload).json()
         print(resp)
         return resp['result']
 
@@ -258,7 +258,7 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         payload = {'name': self.name}
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
-                '/configs/-/' + self.session_id, data=payload)
+                '/configs/-/' + self.session_id, data=payload).json()
         print(resp)
         return resp['result']
 
