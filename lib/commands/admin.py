@@ -59,18 +59,37 @@ class Admin(BaseCommand):
         return data, rows, data.keys()
 
     def execute(self):
+        
         self.create_parser()
+
         if not self.endpoint:
             raise Exception("An endpoint must be defined")
         try:
             method = getattr(self, self.endpoint)
             data = method() #call the method specified in self.endpoint
-            print("Data type= " + str(type(data)))
-            if self.csv:
-                print(self.to_csv(data))
+            self.output(data, self.to_csv, self.to_table)
         except AttributeError as e:
-            print("Please enter a correct REST endpoint")
             print(e)
+            print("Please enter a correct REST endpoint")
+            print(self.parser.print_help())
+    def show_all(self):
+        print("""
+            1- register 
+            2- verify_login
+            3- logout
+            4- get_user_info
+            5- update_user_info
+            6- get_profile
+            7- delete_profile
+            8- list_users
+            9- get_one_user
+            10- assign_userid_to_role
+            11- delete_role
+            12- get_users_for_role
+            13- get_user_configs
+            14- set_user_config
+            15- delete_user_config
+            """)
     
     def verify_login(self):
         if not self.session_id:
@@ -85,10 +104,8 @@ class Admin(BaseCommand):
         """
         resp = requests.get(self.admin_url + '/logoff')
         self.session_id = None
-        print(resp.json())
-        rows = [0]
-        data = resp.json()
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
     def get_user_info(self):
         """
         Usage: 
@@ -98,10 +115,8 @@ class Admin(BaseCommand):
         self.verify_login()
         assert self.session_id is not None
         resp = requests.get(self.admin_url + '/profile/-/' + self.session_id)
-        print(resp.json())
-        data = resp.json()
-        rows = [0]
-        return data, rows, data.keys() 
+        print(resp)
+        return resp['result']
     
     def update_user_info(self):
         """
@@ -115,9 +130,8 @@ class Admin(BaseCommand):
         payload = {'username': self.username, 'email': self.email,'password': self.password}
         print(payload)
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id, data=payload)
-        print(resp.json())
-        rows = [0]
-        return resp.json(), rows, resp.keys()
+        print(resp)
+        return resp['result']
 
     def get_profile(self):
         """
@@ -131,11 +145,8 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         assert self.user_id is not None
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
-        print(resp.json())
-        data = resp.json()
-        rows = [0]
-
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
 
     def delete_profile(self):
         """
@@ -148,9 +159,9 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         assert self.user_id is not None
         resp = requests.delete(self.admin_url + '/profile/' + self.user_id + '/-/' + self.session_id)
-        print(resp.json())
-        rows = [0]
-        return resp.json(), rows, resp.keys()
+        print(resp)
+        return resp['result']
+
     def list_users(self):
         """
         Usage:
@@ -158,8 +169,8 @@ class Admin(BaseCommand):
         >> pyhton admin.py --endpoint list_users
         """
         resp = requests.get(self.admin_url + " /list")
-        print(resp.json())
-        return resp.json()
+        print(resp)
+        return resp['result']
 
     def get_one_user(self):
         """
@@ -168,10 +179,8 @@ class Admin(BaseCommand):
         >> python admin.py --endpoint get_one_user --username someuser
         """
         resp = requests.get(self.admin_url + "/list/" + self.username)
-        print(resp.json())
-        rows = [0]
-        data = resp.json()
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
 
     def assign_userid_to_role(self):
         """
@@ -181,8 +190,8 @@ class Admin(BaseCommand):
         """
         payload = {'user_id': self.user_id, 'role': self.role}
         resp = requests.post(self.admin_url + '/roles', data=payload)
-        print(resp.json())
-        return resp.json()
+        print(resp)
+        return resp['result']
     def delete_role(self):
         """
         Usage:
@@ -192,8 +201,8 @@ class Admin(BaseCommand):
         """
         payload = {'user_id': self.user_id, 'role': self.role}
         resp = requests.delete(self.admin_url + '/roles')
-        print(resp.json())
-        return resp.json()
+        print(resp)
+        return resp['result']
     def get_users_for_role(self):
         """
         Usage:
@@ -203,8 +212,8 @@ class Admin(BaseCommand):
         >> python admin.py --endpoint get_users_for_role --role somerole
         """
         resp = requests.get(self.admin_url + '/roles/' + self.role)
-        print(resp.json())
-        return resp.json() 
+        print(resp)
+        return resp['result']
     def get_user_configs(self):
         """
         Usage:
@@ -217,10 +226,9 @@ class Admin(BaseCommand):
         url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id)
-        print(resp.json())
-        rows = [0]
-        data = resp.json()
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
+
     def set_user_config(self):
         """
         Usage:
@@ -235,10 +243,8 @@ class Admin(BaseCommand):
         payload = {'name': self.name, 'value': self.value}
         resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
                 '/configs/-/' + self.session_id, data=payload)
-        print(resp.json())
-        rows = [0]
-        data = resp.json()
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
 
     def delete_user_config(self):
         """
@@ -253,10 +259,8 @@ class Admin(BaseCommand):
         payload = {'name': self.name}
         resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
                 '/configs/-/' + self.session_id, data=payload)
-        print(resp.json())
-        rows = [0]
-        data = resp.json()
-        return data, rows, data.keys()
+        print(resp)
+        return resp['result']
 
 
 
