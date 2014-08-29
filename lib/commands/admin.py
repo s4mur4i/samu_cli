@@ -53,15 +53,11 @@ class Admin(BaseCommand):
         """
         payload = {'username': self.username, 'email': self.email,
                 'password': self.password}
-        resp = requests.post(self.admin_url, data=payload)
-        data = resp.json()
-        rows= [0]
-        return data, rows, data.keys()
+        resp = requests.post(self.admin_url, data=payload).json()
+        return resp['result']
 
     def execute(self):
-        
         self.create_parser()
-
         if not self.endpoint:
             raise Exception("An endpoint must be defined")
         try:
@@ -72,6 +68,7 @@ class Admin(BaseCommand):
             print(e)
             print("Please enter a correct REST endpoint")
             print(self.parser.print_help())
+    
     def show_all(self):
         print("""
             1- register 
