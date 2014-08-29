@@ -69,8 +69,8 @@ class BaseCommand(object):
         resp = resp.json()
         result = resp['result']
         rows= [0]
-        print(json)
-        if json:
+        print(resp)
+        if resp:
             #verify that it's a succesful login
             assert resp['status'] == 'success'
             if 'sessionid' in result.keys():
