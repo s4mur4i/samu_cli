@@ -54,6 +54,7 @@ class Admin(BaseCommand):
         payload = {'username': self.username, 'email': self.email,
                 'password': self.password}
         resp = requests.post(self.admin_url, data=payload).json()
+        print(resp)
         return resp['result']
 
     def execute(self):
