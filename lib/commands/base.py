@@ -66,14 +66,15 @@ class BaseCommand(object):
         payload = {'username': self.username, 'password': self.password}
         url = self.app_base_url + "/admin/login"
         resp = requests.post(url, data=payload)
-        json = resp.json()['result']
+        resp = resp.json()
+        result = resp['result']
         rows= [0]
         print(json)
         if json:
             #verify that it's a succesful login
-            assert json['status'] == 'success'
-            if 'sessionid' in json.keys():
-                self.session_id = json['sessionid']
+            assert resp['status'] == 'success'
+            if 'sessionid' in result.keys():
+                self.session_id = result['sessionid']
                 print("Going to write sessionid in file")
                 session_file = open(self.session_file_path, mode='w', encoding='utf-8')
                 now = datetime.now()
@@ -82,7 +83,7 @@ class BaseCommand(object):
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
-        return json, rows, json.keys()
+        return result, rows, result.keys()
 
 
     def add_arguments(self):
