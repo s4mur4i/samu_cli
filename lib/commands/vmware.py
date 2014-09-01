@@ -1,3 +1,4 @@
+import traceback
 import requests
 from base import BaseCommand
 from configparser import SafeConfigParser
@@ -72,6 +73,7 @@ class VM(VMWareBase):
             print(e)
             print("Please enter a correct REST endpoint")
             print(self.parser.print_help())
+            print("Stacktrace: %s" % (traceback.format_exc()))
 
     def show_all(self):
         print("""
