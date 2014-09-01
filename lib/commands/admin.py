@@ -166,7 +166,9 @@ class Admin(BaseCommand):
         Lists users and a call to /admin/list is sent
         >> pyhton admin.py --endpoint list_users
         """
-        resp = requests.get(self.admin_url + " /list").json()
+        url = self.admin_url + "/list"
+        print("Request URL: " + url)
+        resp = requests.get(url).json()
         print(resp)
         return resp['result']
 
