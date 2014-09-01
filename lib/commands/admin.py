@@ -241,8 +241,9 @@ class Admin(BaseCommand):
         assert self.session_id is not None
         assert self.user_id is not None
         payload = {'name': self.name, 'value': self.value}
-        resp = requests.post(self.admin_url + '/profile/' + self.user_id + \
-                '/configs/-/' + self.session_id, data=payload).json()
+        url = self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id
+        print("Request URL: " + url)
+        resp = requests.post(url, data=payload).json()
         print(resp)
         return resp['result']
 
