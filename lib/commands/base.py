@@ -67,8 +67,7 @@ class BaseCommand(object):
         url = self.app_base_url + "/admin/login"
         resp = requests.post(url, data=payload)
         resp = resp.json()
-        result = resp['result']
-        rows= [0]
+        result = resp['result'][0]
         print(resp)
         if resp:
             #verify that it's a succesful login
