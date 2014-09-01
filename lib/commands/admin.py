@@ -223,7 +223,7 @@ class Admin(BaseCommand):
         """
 
         self.verify_login()
-        url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id 
+        url = self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
         resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id).json()
         print(resp)
