@@ -82,7 +82,7 @@ class BaseCommand(object):
                 session_file.close()
             else:
                 raise Exception("Didn't receive session-id after login")
-        return result, rows, result.keys()
+        return result
 
 
     def add_arguments(self):
