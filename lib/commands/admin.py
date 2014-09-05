@@ -189,7 +189,9 @@ class Admin(BaseCommand):
         >> python admin.py --endpoint assign_userid_to_role --user_id 4 --role somerole
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        resp = requests.post(self.admin_url + '/roles', data=payload).json()
+        url = self.admin_url + '/roles'
+        print("Requesting: " + url)
+        resp = requests.post(url, data=payload).json()
         print(resp)
         return resp['result']
     def delete_role(self):
@@ -200,7 +202,9 @@ class Admin(BaseCommand):
 
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        resp = requests.delete(self.admin_url + '/roles').json()
+        url = self.admin_url + '/roles'
+        print("Requesting: " + url)
+        resp = requests.delete(url).json()
         print(resp)
         return resp['result']
     def get_users_for_role(self):
@@ -211,7 +215,9 @@ class Admin(BaseCommand):
         Usage:
         >> python admin.py --endpoint get_users_for_role --role somerole
         """
-        resp = requests.get(self.admin_url + '/roles/' + self.role).json()
+        url = self.admin_url + '/roles/' + self.role
+        print("Requesting: " + url)
+        resp = requests.get(url).json()
         print(resp)
         return resp['result']
     def get_user_configs(self):
@@ -225,7 +231,7 @@ class Admin(BaseCommand):
         self.verify_login()
         url = self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id 
         print(url)
-        resp = requests.get(self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id).json()
+        resp = requests.get(url).json()
         print(resp)
         return resp['result']
 
@@ -258,8 +264,9 @@ class Admin(BaseCommand):
         self.verify_login()
         assert self.session_id is not None
         payload = {'name': self.name}
-        resp = requests.delete(self.admin_url + '/profile/ ' + self.user_id + 
-                '/configs/-/' + self.session_id, data=payload).json()
+        url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id
+        print("Requesting: " + url)
+        resp = requests.delete(url, data=payload).json()
         print(resp)
         return resp['result']
 
