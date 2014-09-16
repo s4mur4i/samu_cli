@@ -87,6 +87,7 @@ class Admin(BaseCommand):
             13- get_user_configs
             14- set_user_config
             15- delete_user_config
+            16- list_roles
             """)
     
     def verify_login(self):
@@ -187,9 +188,14 @@ class Admin(BaseCommand):
         Usage:
         Assigns a role to user-id
         >> python admin.py --endpoint assign_userid_to_role --user_id 4 --role somerole
+        >>To add a user to a role:
+
+        s4mur4i@hanoi:~/workspace/samu/lib/SamuRest/Controller$ curl -X POST -d 'user_id=3&role=privilege' 
+        http://localhost:3000/admin/roles/privilege/-/7...
+        {"status":"success","result":[{"id":3}]}
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        url = self.admin_url + '/roles'
+        url = self.admin_url + '/roles/' + self.role + "/-/" + self.session_id
         print("Requesting: " + url)
         resp = requests.post(url, data=payload).json()
         print(resp)
@@ -199,10 +205,11 @@ class Admin(BaseCommand):
         Usage:
         Deletes a role and used as below.
         >> python admin.py --endpoint delete_role --user_id 3 --role somerole
+        >>curl -X DELETE -d 'user_id=3&role=privilege' http://localhost:3000/admin/roles/privilege/-/7...
 
         """
         payload = {'user_id': self.user_id, 'role': self.role}
-        url = self.admin_url + '/roles'
+        url = self.admin_url + '/roles/' + self.role + "/-/" + self.session_id
         print("Requesting: " + url)
         resp = requests.delete(url).json()
         print(resp)
@@ -220,6 +227,19 @@ class Admin(BaseCommand):
         resp = requests.get(url).json()
         print(resp)
         return resp['result']
+    
+    def list_roles(self):
+        """
+        s4mur4i@hanoi:~/workspace/samu/lib/SamuRest/Controller$ curl -X GET 
+        http://localhost:3000/admin/roles/-/771ef51492d...
+        {"status":"success","result":[{"1":"admin"},{"2":"guest"},{"3":"registered"},{"4":"privilege"}]}
+        """
+        url = self.admin_url + '/roles/-/' + self.session_id
+        print("Requesting: " + url)
+        resp = requests.get(url).json()
+        print(resp)
+        return resp['result']
+
     def get_user_configs(self):
         """
         Usage:
@@ -241,6 +261,8 @@ class Admin(BaseCommand):
         Sets user configs and call to 
         /admin/profile/user-id/configs/-/session-id is sent
         >> python admin.py --endpoint set_user_config --user_id 2 --name name --value value
+        >>curl -X POST -d 'name=vcenter_username&value=test2' http://localhost:3000/admin/profile/3/configs/-...
+        {"status":"success","result":[{"data":"test2","config_id":2}]}
         """
 
         self.verify_login()
@@ -259,6 +281,8 @@ class Admin(BaseCommand):
         Delete user configs and call to
         /admin/profile/user-id/configs/-/session-id is sent
         >> python admin.py --endpoint delete_user_configs --user_id 4 --name name
+        >>curl -X DELETE -d 'name=vcenter_username' http://localhost:3000/admin/profile/3/configs/-...
+        {"status":"success","result":[{}]}
         """
 
         self.verify_login()
