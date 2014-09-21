@@ -211,7 +211,7 @@ class Admin(BaseCommand):
         payload = {'user_id': self.user_id, 'role': self.role}
         url = self.admin_url + '/roles/' + self.role + "/-/" + self.session_id
         print("Requesting: " + url)
-        resp = requests.delete(url).json()
+        resp = requests.delete(url, data=payload).json()
         print(resp)
         return resp['result']
     def get_users_for_role(self):
