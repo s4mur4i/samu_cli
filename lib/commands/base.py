@@ -32,7 +32,7 @@ class BaseCommand(object):
                 field_names = list(data[0].keys())
         except:
             raise Exception("Data disctionary not correctly defined")
-        if to_table:
+        if to_table and field_names:
             table = PrettyTable()
             table.field_names = field_names
             table.max_width = 80
