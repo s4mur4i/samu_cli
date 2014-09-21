@@ -27,6 +27,7 @@ class BaseCommand(object):
         self.session_timestamp = None
 
     def output(self, data, to_csv=False, to_table=False):
+        field_names = None
         try:
             if data and data[0]:
                 field_names = list(data[0].keys())
