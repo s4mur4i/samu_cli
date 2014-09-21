@@ -288,7 +288,7 @@ class Admin(BaseCommand):
         self.verify_login()
         assert self.session_id is not None
         payload = {'name': self.name}
-        url = self.admin_url + '/profile/ ' + self.user_id + '/configs/-/' + self.session_id
+        url = self.admin_url + '/profile/' + self.user_id + '/configs/-/' + self.session_id
         print("Requesting: " + url)
         resp = requests.delete(url, data=payload).json()
         print(resp)
