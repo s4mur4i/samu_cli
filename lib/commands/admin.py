@@ -183,7 +183,7 @@ class Admin(BaseCommand):
         print(resp)
         return resp['result']
 
-    def assign_userid_to_role(self):
+    def assign_role_to_userid(self):
         """
         Usage:
         Assigns a role to user-id
