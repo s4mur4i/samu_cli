@@ -55,7 +55,7 @@ First level options are following:
   def admin(self):
     self.logger.info('First endpoint for admin')
     from admin import Admin
-    a = Admin()
+    a = Admin( logger = self.logger)
     a.start()
 
   def vmware(self):

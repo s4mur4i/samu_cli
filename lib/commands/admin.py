@@ -3,8 +3,9 @@ import sys
 
 class Admin(ObjectS):
 
-  def __init__(self):
-    print 'Admin module entry endpoint'
+  def __init__(self, logger = None):
+    self.logger = logger
+    self.logger.info('Admin module entry endpoint')
 
   def start(self):
-    print 'Invoked starting point for Admin'
+    self.logger.info('Invoked starting point for Admin')

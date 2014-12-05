@@ -14,7 +14,7 @@ class Logger(object):
     self.ilog.addHandler(ch)
     #
     self.verbosity = 3
-    self.verbosity = self.verbosity_parser()
+    self.verbosity_parser()
     #ilog.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  datefmt='%m/%d/%Y %I:%M:%S %p')
   
   def verbosity_parser(self):
@@ -35,24 +35,28 @@ class Logger(object):
       self.verbosity = 5
     elif self.verbosity < 0:
       self.verbosity = 0
-    print "verbosity is %s " % self.verbosity
 
   def critical(self, msg):
     # verbosity = 1
-    self.ilog.critical(msg)
+    if self.verbosity >= 1:
+        self.ilog.critical(msg)
 
   def error(self, msg):
     # verbosity = 2
-    self.ilog.error(msg)
+    if self.verbosity >= 2:
+        self.ilog.error(msg)
 
   def warning(self, msg):
     # verbosity = 3
-    self.ilog.warning(msg)
+    if self.verbosity >= 3:
+        self.ilog.warning(msg)
 
   def info(self, msg):
     # verbosity = 4
-    self.ilog.info(msg)
+    if self.verbosity >= 4:
+        self.ilog.info(msg)
 
   def debug(self, msg):
     # verbosity = 5
-    self.ilog.debug(msg)
+    if self.verbosity >= 5:
+        self.ilog.debug(msg)
