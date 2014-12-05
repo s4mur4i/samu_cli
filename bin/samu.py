@@ -34,7 +34,8 @@ def resolve_link_chain(path):
 
 class Initiator(object):
   
-  def __init__(self):
+  def __init__(self, logger = None ):
+    self.logger = logger
     parser = argparse.ArgumentParser( description='Samu tool for Support', usage= ''' samu.py <command> [<args>]
     
 First level options are following:
@@ -46,26 +47,26 @@ First level options are following:
     parser.add_argument('command',  help='Command to run')
     args = parser.parse_args(sys.argv[1:2])
     if not hasattr(self, args.command):
-      print 'Unrecognized command'
+      self.logger.error('Unrecognized command')
       parser.print_help()
       exit(1)
     getattr(self, args.command)()
     
   def admin(self):
-    print 'First endpoint for admin'
+    self.logger.info('First endpoint for admin')
     from admin import Admin
     a = Admin()
     a.start()
 
   def vmware(self):
-    print 'First endpoint for vmware'
+    self.logger.info('First endpoint for vmware')
 
   def kayako(self):
-    print 'Not implemented yet'
+    self.logger.debug('Not implemented yet')
     exit(1)
 
   def devel(self):
-    print 'Not implemented yet'
+    self.logger.debug('Not implemented yet')
     exit(1)
 
 if __name__ == '__main__':
@@ -80,4 +81,8 @@ if __name__ == '__main__':
   sys.path.append(samu_lib_dir)
   samu_commands_dir = "%s/lib/commands/" % (root_dir,)
   sys.path.append(samu_commands_dir)
-  Initiator()
+  # Samu specific logger
+  from Logger import Logger
+  logger = Logger()
+  logger.debug('Starting Initiator')
+  Initiator( logger=logger )
