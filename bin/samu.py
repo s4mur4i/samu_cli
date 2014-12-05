@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # vim: sts=2 ts=2 et ai
-
+# https://github.com/kislyuk/argcomplete
+# Investigate for later 
 import time
 start_time = time.time()
 
 import errno
 import os
 import sys
+import argparse
 
 def resolve_link_chain(path):
     try:
@@ -30,15 +32,52 @@ def resolve_link_chain(path):
             basedir = os.path.dirname(p)
     return os.path.join(basedir, p)
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(resolve_link_chain(os.path.abspath(sys.argv[0])))))
-if os.path.samefile(sys.argv[0], root_dir + '/bin/samu.py'):
-    os.environ['SAMU_ROOT'] = root_dir
-else:
-    print("The script started as a symlink doesn't point to it's own script (to '{0}/bin/samu.py'))".format(root_dir))
-    sys.exit(1)
+class Initiator(object):
+  
+  def __init__(self):
+    parser = argparse.ArgumentParser( description='Samu tool for Support', usage= ''' samu.py <command> [<args>]
+    
+First level options are following:
+  admin     user related interface
+  vmware    vmware related interface
+  kayako    kayako related interface
+  devel     development interface
+    ''')
+    parser.add_argument('command',  help='Command to run')
+    args = parser.parse_args(sys.argv[1:2])
+    if not hasattr(self, args.command):
+      print 'Unrecognized command'
+      parser.print_help()
+      exit(1)
+    getattr(self, args.command)()
+    
+  def admin(self):
+    print 'First endpoint for admin'
+    from admin import Admin
+    a = Admin()
+    a.start()
 
-samu_lib_dir = "%s/lib" % (root_dir,)
-sys.path.append(samu_lib_dir)
+  def vmware(self):
+    print 'First endpoint for vmware'
 
-from main import app_main
-app_main(start_time, root_dir)
+  def kayako(self):
+    print 'Not implemented yet'
+    exit(1)
+
+  def devel(self):
+    print 'Not implemented yet'
+    exit(1)
+
+if __name__ == '__main__':
+  root_dir = os.path.dirname(os.path.dirname(os.path.abspath(resolve_link_chain(os.path.abspath(sys.argv[0])))))
+  if os.path.samefile(sys.argv[0], root_dir + '/bin/samu.py'):
+      os.environ['SAMU_ROOT'] = root_dir
+  else:
+      print("The script started as a symlink doesn't point to it's own script (to '{0}/bin/samu.py'))".format(root_dir))
+      sys.exit(1)
+
+  samu_lib_dir = "%s/lib" % (root_dir,)
+  sys.path.append(samu_lib_dir)
+  samu_commands_dir = "%s/lib/commands/" % (root_dir,)
+  sys.path.append(samu_commands_dir)
+  Initiator()
