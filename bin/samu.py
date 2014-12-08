@@ -39,10 +39,23 @@ class Initiator(object):
     parser = argparse.ArgumentParser( description='Samu tool for Support', usage= ''' samu.py <command> [<args>]
     
 First level options are following:
-  admin     user related interface
-  vmware    vmware related interface
-  kayako    kayako related interface
-  devel     development interface
+  admin               user related interface
+  vmware              vmware related interface
+  kayako              kayako related interface
+  devel               development interface
+
+Global Options:
+  -v, --verbose       increment verbosity level (max 5)
+  -q, --quiet         decrease verbosity level (max 0)
+  # Default verbosity level 3
+  # Following options defaults to config file but can be overriden
+  # with these arguments
+  --samu_username     Username to use for samu
+  --samu_password     Password to use for samu
+  --samu_url          Url for samu Rest API
+  --vcenter_username  Username to Vcenter
+  --vcenter_password  Password to Vcenter
+  --vcenter_url       SDK url for Vcenter
     ''')
     parser.add_argument('command',  help='Command to run')
     args = parser.parse_args(sys.argv[1:2])
