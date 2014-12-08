@@ -21,7 +21,6 @@ class ObjectS(object):
     self.logger.debug("Samu url is: %s" % self.samu_url )
     self.logger.debug("Vcenter_username is: %s" % self.vcenter_username )
     self.logger.debug("Vcenter_url is: %s" % self.vcenter_url )
-    self.get_sessionid()
   
   def config_parse(self, file):
     self.cfg_parser = SafeConfigParser()
@@ -36,7 +35,6 @@ class ObjectS(object):
   def cli_argument_parse(self):
     i = 0
     while i < len(sys.argv):
-    #for i, arg in enumerate(sys.argv):
       if i >= len(sys.argv):
         break
       if sys.argv[i] == '--samu_username':
@@ -107,9 +105,7 @@ class ObjectS(object):
     resp = resp.json()
     self.logger.debug("Response received: " + str(resp))
     if resp:
-        if resp['status'] != 'success':
-          self.logger.error("Error message: %s " % resp['message'] )
-          sys.exit(1)
+        self.check_status(resp)
         self.sessionid = resp['result'][0]['sessionid']
         file = open(self.sessionid_filename,  mode='w')
         now = datetime.now()
@@ -119,3 +115,9 @@ class ObjectS(object):
         file.close()
     else:
       self.logger.error("No response gotten from server")
+
+  def check_status(self, resp = None):
+    if resp['status'] != 'success':
+      self.logger.error("Error message: %s " % resp['message'] )
+      sys.exit(1)
+    
