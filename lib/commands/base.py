@@ -31,36 +31,39 @@ class ObjectS(object):
     self.vcenter_url = self.cfg_parser.get('vmware', 'vcenter_url')
 
   def cli_argument_parse(self):
-    for i, arg in enumerate(sys.argv):
-      if arg == '--samu_username':
-        self.samu_username = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-      elif arg == '--samu_password':
-        self.samu_password = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-      elif arg == '--samu_url':
-        self.samu_url = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-      if arg == '--vcenter_username':
-        self.vcenter_username = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-      elif arg == '--vcenter_password':
-        self.vcenter_password = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-      elif arg == '--vcenter_url':
-        self.vcenter_url = sys.argv[i+1]
-        sys.argv[ i+1 ] = None
-        sys.argv[ i ] = None
-    # Since we have alot of None options in sys.argv we should clean it up
+    i = 0
     while i < len(sys.argv):
+    #for i, arg in enumerate(sys.argv):
       if i >= len(sys.argv):
         break
-      if sys.argv[i] == None:
+      if sys.argv[i] == '--samu_username':
+        self.samu_username = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--samu_password':
+        self.samu_password = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--samu_url':
+        self.samu_url = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      if sys.argv[i] == '--vcenter_username':
+        self.vcenter_username = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--vcenter_password':
+        self.vcenter_password = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--vcenter_url':
+        self.vcenter_url = sys.argv[i+1]
+        sys.argv.pop(i+1)
         sys.argv.pop(i)
         i -= 1
       else:
