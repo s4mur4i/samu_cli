@@ -84,8 +84,21 @@ class ObjectS(object):
       token = file.read()
       splitter = "===="
       self.sessionid = token.split(splitter)[0]
+      self.session_timestamp = token.split(splitter)[1]
+    if self.session_timeframe_checker() == False:
+      self.login()
     self.logger.debug("Session id is: %s" % self.sessionid)
     
+  def session_timeframe_checker(self):
+     timestamp = datetime.strptime(self.session_timestamp, '%Y-%m-%d %H:%M')
+     now = datetime.now()
+     delta =now - timestamp
+     timeout = 300
+     self.logger.debug("Delta is: %s" % delta.total_seconds())
+     if delta.total_seconds() < timeout:
+       return True
+     else:
+       return False
 
   def login(self):
     payload = {'username': self.samu_username, 'password': self.samu_password}
@@ -100,8 +113,9 @@ class ObjectS(object):
         self.sessionid = resp['result'][0]['sessionid']
         file = open(self.sessionid_filename,  mode='w')
         now = datetime.now()
-        timestamp = now.strftime("%Y-%m-%d %H:%m")
-        file.write(self.sessionid + "====" + timestamp)
+        self.session_timestamp = now.strftime("%Y-%m-%d %H:%M")
+        self.logger.debug("Timestamp is: %s" % self.session_timestamp)
+        file.write(self.sessionid + "====" + self.session_timestamp)
         file.close()
     else:
       self.logger.error("No response gotten from server")
