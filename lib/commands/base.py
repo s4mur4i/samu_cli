@@ -1,6 +1,8 @@
 from configparser import SafeConfigParser
 import os
 import sys
+import requests
+from datetime import datetime,  timedelta
 
 class ObjectS(object):
 
@@ -19,6 +21,7 @@ class ObjectS(object):
     self.logger.debug("Samu url is: %s" % self.samu_url )
     self.logger.debug("Vcenter_username is: %s" % self.vcenter_username )
     self.logger.debug("Vcenter_url is: %s" % self.vcenter_url )
+    self.get_sessionid()
   
   def config_parse(self, file):
     self.cfg_parser = SafeConfigParser()
@@ -68,3 +71,37 @@ class ObjectS(object):
         i -= 1
       else:
         i += 1
+
+  def get_sessionid(self):
+    self.sessionid_filename = "/tmp/%s_samu_session" % self.samu_username
+    self.logger.debug("Session ID file: %s" % self.sessionid_filename)
+    self.sessionid = None
+    try:
+      file = open(self.sessionid_filename)
+    except IOError:
+      self.login()
+    if self.sessionid is None:
+      token = file.read()
+      splitter = "===="
+      self.sessionid = token.split(splitter)[0]
+    self.logger.debug("Session id is: %s" % self.sessionid)
+    
+
+  def login(self):
+    payload = {'username': self.samu_username, 'password': self.samu_password}
+    url = self.samu_url + "/admin/login"
+    resp = requests.post(url, data=payload)
+    resp = resp.json()
+    self.logger.debug("Response received: " + str(resp))
+    if resp:
+        if resp['status'] != 'success':
+          self.logger.error("Error message: %s " % resp['message'] )
+          sys.exit(1)
+        self.sessionid = resp['result'][0]['sessionid']
+        file = open(self.sessionid_filename,  mode='w')
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%m")
+        file.write(self.sessionid + "====" + timestamp)
+        file.close()
+    else:
+      self.logger.error("No response gotten from server")
