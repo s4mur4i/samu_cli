@@ -97,8 +97,28 @@ Example:
     self.output(resp['result'])
 
   def users(self):
-    print "To be implemented"
-    exit(1)
+    self.get_sessionid()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin users [<args>]]
+
+User endpoint args:
+  --username <user_id>
+
+Example:
+  samu.py admin users
+  samu.py admin users --username herring
+    ''')
+    parser.add_argument('--username', default=None, help="Get id of specific username")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.username is not None:
+      url = self.admin_url + '/list/' + args.username + '/-/' + self.sessionid
+      resp = requests.get(url, data=self.http_payload()).json()
+    else:
+      url = self.admin_url + '/list/-/' + self.sessionid
+      resp = requests.get(url, data=self.http_payload()).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def config(self):
     print "To be implemented"
