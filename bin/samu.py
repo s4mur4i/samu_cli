@@ -53,9 +53,14 @@ Global Options:
   --samu_username     Username to use for samu
   --samu_password     Password to use for samu
   --samu_url          Url for samu Rest API
+  --samu_verbosity    Verbosity level for server side
   --vcenter_username  Username to Vcenter
   --vcenter_password  Password to Vcenter
   --vcenter_url       SDK url for Vcenter
+
+Global Output options:
+  --table             Output should use Prettytable to printing
+  --csv               Output should use csv format for printing (delimiter ';')
     ''')
     parser.add_argument('command',  help='Command to run')
     args = parser.parse_args(sys.argv[1:2])

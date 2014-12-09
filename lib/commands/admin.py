@@ -32,9 +32,14 @@ Global Options:
   --samu_username     Username to use for samu
   --samu_password     Password to use for samu
   --samu_url          Url for samu Rest API
+  --samu_verbosity    Verbosity level for server side
   --vcenter_username  Username to Vcenter
   --vcenter_password  Password to Vcenter
   --vcenter_url       SDK url for Vcenter
+
+Global Output options:
+  --table             Output should use Prettytable to printing
+  --csv               Output should use csv format for printing (delimiter ';')
     ''')
     parser.add_argument('command',   help='Command to run')
     args = parser.parse_args(sys.argv[2:3])
@@ -50,7 +55,7 @@ Global Options:
 
   def logout(self):
     self.get_sessionid()
-    resp = requests.get(self.admin_url + '/logoff/-/' + self.sessionid).json()
+    resp = requests.get(self.admin_url + '/logoff/-/' + self.sessionid, data=self.http_payload()).json()
     self.check_status(resp)
     print "Session id %s logged out" % self.sessionid
 
@@ -59,11 +64,34 @@ Global Options:
     parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin roles [<args>]]
 
 Roles endpoint args:
+  --role <role_name>     List, remove, update users in a role
+  --remove <user_id>     User to remove from role
+  --update <user_id>     User to give specific role
+
+Example:
+  samu.py admin roles 
+  samu.py admin roles --role admin
+  samu.py admin roles --role admin --remove 1
+  samu.py admin roles --role admin --update 1
     ''')
+    parser.add_argument('--role', default=None, help="Endpoint for specific role")
+    parser.add_argument('--remove', default=None, help="Remove specific user id")
+    parser.add_argument('--update', default=None, help="Add specific user id")
     args = parser.parse_args(sys.argv[3:])
-    url = self.admin_url + '/roles/-/' + self.sessionid
-    self.logger.debug("URL for download is: %s" % url)
-    resp = requests.get(url).json()
+    resp = None
+    if args.role == None:
+      url = self.admin_url + '/roles/-/' + self.sessionid
+      self.logger.debug("URL for download is: %s" % url)
+      resp = requests.get(url, data=self.http_payload()).json()
+    else:
+      url = self.admin_url + '/roles/' + args.role + '/-/' + self.sessionid
+      self.logger.debug("URL for download is: %s" % url)
+      if args.remove is not None:
+        resp = requests.delete(url, data=self.http_payload({'user_id': args.remove, 'role': args.role})).json()
+      if args.update is not None:
+        resp = requests.post(url, data=self.http_payload({'user_id': args.update, 'role': args.role})).json()
+      else:
+        resp = requests.get(url, data=self.http_payload()).json()
     self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
@@ -89,7 +117,7 @@ Register endpoint args:
     parser.add_argument('--password',  default=None,  help='Requested password for user')
     args = parser.parse_args(sys.argv[3:])
     payload = {'username': args.username,  'email': args.email, 'password': args.password}
-    resp = requests.post(self.admin_url,  data=payload).json()
+    resp = requests.post(self.admin_url,  data=self.http_payload(payload)).json()
     self.check_status(resp)
     print "User has been registered with %s username and id of %s " % ( args.username, resp['result'][0]['id'])
     print "Please update samu.config in your home directory"

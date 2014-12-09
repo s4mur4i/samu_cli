@@ -39,6 +39,8 @@ class ObjectS(object):
     i = 0
     self.table = True
     self.csv = False
+    # Default verbosity to use for logging
+    self.samu_verbosity = 6
     while i < len(sys.argv):
       if i >= len(sys.argv):
         break
@@ -54,6 +56,11 @@ class ObjectS(object):
         i -= 1
       elif sys.argv[i] == '--samu_url':
         self.samu_url = sys.argv[i+1]
+        sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--samu_verbosity':
+        self.samu_verbosity = sys.argv[i+1]
         sys.argv.pop(i+1)
         sys.argv.pop(i)
         i -= 1
@@ -114,7 +121,7 @@ class ObjectS(object):
        return False
 
   def login(self):
-    payload = {'username': self.samu_username, 'password': self.samu_password}
+    payload = self.http_payload({'username': self.samu_username, 'password': self.samu_password})
     url = self.samu_url + "/admin/login"
     resp = requests.post(url, data=payload)
     resp = resp.json()
@@ -161,3 +168,10 @@ class ObjectS(object):
       for item in data:
         ordered_item = collections.OrderedDict(sorted(item.items()))
         writer.writerow(ordered_item)
+  
+  def http_payload(self, payload=None):
+    if payload == None:
+      payload = {'verbosity': self.samu_verbosity}
+    else:
+      payload['verbosity'] = self.samu_verbosity
+    return payload
