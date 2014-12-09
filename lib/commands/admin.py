@@ -13,7 +13,7 @@ class Admin(ObjectS):
   def start(self):
     self.logger.info('Invoked starting point for Admin')
     self.admin_url = self.samu_url + '/admin'
-    self.parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py <command> [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py <command> [<args>]]
 
 Second level options are following:
   profile
@@ -36,11 +36,11 @@ Global Options:
   --vcenter_password  Password to Vcenter
   --vcenter_url       SDK url for Vcenter
     ''')
-    self.parser.add_argument('command',   help='Command to run')
-    args = self.parser.parse_args(sys.argv[2:3])
+    parser.add_argument('command',   help='Command to run')
+    args = parser.parse_args(sys.argv[2:3])
     if not hasattr(self,  args.command):
       self.logger.error('Unrecognized command')
-      self.parser.print_help()
+      parser.print_help()
       exit(1)
     getattr(self,  args.command)()
 
@@ -55,8 +55,18 @@ Global Options:
     print "Session id %s logged out" % self.sessionid
 
   def roles(self):
-    print "To be implemented"
-    exit(1)
+    self.get_sessionid()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin roles [<args>]]
+
+Roles endpoint args:
+    ''')
+    args = parser.parse_args(sys.argv[3:])
+    url = self.admin_url + '/roles/-/' + self.sessionid
+    self.logger.debug("URL for download is: %s" % url)
+    resp = requests.get(url).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def users(self):
     print "To be implemented"
@@ -67,9 +77,9 @@ Global Options:
     exit(1)
   
   def register(self):
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py <command> [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin register [<args>]]
 
-Register endpoint:
+Register endpoint args:
   --email
   --username
   --password

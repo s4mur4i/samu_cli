@@ -3,6 +3,9 @@ import os
 import sys
 import requests
 from datetime import datetime,  timedelta
+import csv
+from prettytable import PrettyTable
+import collections
 
 class ObjectS(object):
 
@@ -34,6 +37,8 @@ class ObjectS(object):
 
   def cli_argument_parse(self):
     i = 0
+    self.table = True
+    self.csv = False
     while i < len(sys.argv):
       if i >= len(sys.argv):
         break
@@ -65,6 +70,16 @@ class ObjectS(object):
       elif sys.argv[i] == '--vcenter_url':
         self.vcenter_url = sys.argv[i+1]
         sys.argv.pop(i+1)
+        sys.argv.pop(i)
+        i -= 1
+      if sys.argv[i] == '--table':
+        self.table = True
+        self.csv = False
+        sys.argv.pop(i)
+        i -= 1
+      elif sys.argv[i] == '--csv':
+        self.table = False
+        self.csv = True
         sys.argv.pop(i)
         i -= 1
       else:
@@ -121,3 +136,28 @@ class ObjectS(object):
       self.logger.error("Error message: %s " % resp['message'] )
       sys.exit(1)
     
+  def output(self, data):
+    field_names = None
+    try:
+      if data and data[0]:
+        od = collections.OrderedDict(sorted(data[0].items()))
+        field_names = list(od.keys())
+        self.logger.debug("field_names is: %s" % field_names)
+    except:
+      self.logger.error("Could not parse response")
+      exit(1)
+    if self.table and field_names:
+      table = PrettyTable()
+      table.field_names = field_names
+      table.max_width = 80
+      for item in data:
+        ordered_item = collections.OrderedDict(sorted(item.items()))
+        self.logger.debug("Adding item to table: %s" % ordered_item)
+        table.add_row(list(ordered_item.values()))
+      print(table)
+    if self.csv:
+      writer = csv.DictWriter(sys.stdout,  delimiter=';',  fieldnames = field_names)
+      writer.writeheader()
+      for item in data:
+        ordered_item = collections.OrderedDict(sorted(item.items()))
+        writer.writerow(ordered_item)
