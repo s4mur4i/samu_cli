@@ -138,7 +138,34 @@ Example:
     print "implementing"
 
   def host(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware host [<args>]]
+
+Host endpoint profile
+  --moref <moref>
+
+Example:
+  samu.py vmware host
+  samu.py vmware host --moref 
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to Hostsystem object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/host/" + args.moref + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      connected = resp['result'][0]['vms']
+      del resp['result'][0]['vms']
+      self.output(connected)
+      hw = resp['result'][0]['hw']
+      del resp['result'][0]['hw']
+      self.output([hw])
+    else:
+      url = self.vmware_url + "/host/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def datastore(self):
     self.check_session_exists()
@@ -149,7 +176,7 @@ Datastore endpoint profile
 
 Example:
   samu.py vmware datastore
-  samu.py vmware datastore --moref 
+  samu.py vmware datastore --moref datastore-111
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to datastore object")
     args = parser.parse_args(sys.argv[3:])
