@@ -78,6 +78,9 @@ Global Output options:
 
   def vmware(self):
     self.logger.info('First endpoint for vmware')
+    from vmware import Vmware
+    a = Vmware( logger = self.logger)
+    a.start()
 
   def kayako(self):
     self.logger.debug('Not implemented yet')
