@@ -18,6 +18,16 @@ class Vmware(ObjectS):
 
 Second level options are following:
   sessions
+  datastore
+  host
+  task
+  template
+  ticket
+  user
+  folder
+  resourcepool
+  network
+  vm
 
 Global Options:
   -v, --verbose       increment verbosity level (max 5)
@@ -98,6 +108,62 @@ Example:
     else:
       self.logger.debug("Listing sessions")
       resp = requests.get(url, data=self.http_payload()).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
+
+  def vm(self):
+    print "implementing"
+
+  def network(self):
+    print "implementing"
+
+  def resourcepool(self):
+    print "implementing"
+
+  def folder(self):
+    print "implementing"
+
+  def user(self):
+    print "implementing"
+
+  def ticket(self):
+    print "implementing"
+
+  def template(self):
+    print "implementing"
+
+  def task(self):
+    print "implementing"
+
+  def host(self):
+    print "implementing"
+
+  def datastore(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware datastore [<args>]]
+
+Datastore endpoint profile
+  --moref <moref>
+
+Example:
+  samu.py vmware datastore
+  samu.py vmware datastore --moref 
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to datastore object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    connected = None
+    if args.moref is not None:
+      url = self.vmware_url + "/datastore/" + args.moref + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      connected = resp['result'][0]['connected_vms']
+      del resp['result'][0]['connected_vms']
+      self.output(connected)
+    else:
+      url = self.vmware_url + "/datastore/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
     self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
