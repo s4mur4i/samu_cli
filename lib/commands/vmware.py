@@ -135,7 +135,38 @@ Example:
     print "implementing"
 
   def task(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware task [<args>]]
+
+Host endpoint profile
+  --moref <moref>
+  --delete
+
+Example:
+  samu.py vmware task
+  samu.py vmware task --moref task-1111
+  samu.py vmware task --moref task-1111 --delete
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to Task object")
+    parser.add_argument('--delete',  action='store_true',  help="Cancel task")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/task/" + args.moref + "/-/" + self.sessionid
+      if args.delete == True:
+        self.logger.info("Cancel task")
+        resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      else:
+        self.logger.info("Task info requested")
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    else:
+      url = self.vmware_url + "/task/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
+
 
   def host(self):
     self.check_session_exists()
@@ -146,7 +177,7 @@ Host endpoint profile
 
 Example:
   samu.py vmware host
-  samu.py vmware host --moref 
+  samu.py vmware host --moref host-11
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to Hostsystem object")
     args = parser.parse_args(sys.argv[3:])
