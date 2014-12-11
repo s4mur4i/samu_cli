@@ -68,6 +68,10 @@ Global Output options:
     url = self.vmware_url + "/-/" + self.sessionid
     resp = requests.get(url, data=self.http_payload()).json()
     self.logger.debug("Session check response: %s" % resp)
+    if resp['status'] == 'error':
+      self.vm_login()
+      resp = requests.get(url, data=self.http_payload()).json()
+      self.logger.debug("Session check response: %s" % resp)
     self.check_status(resp)
     for item in resp['result']:
       if (item['vcenter_username'] == self.vcenter_username and item['vcenter_url'] == self.vcenter_url):
@@ -126,10 +130,54 @@ Example:
     print "implementing"
 
   def user(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware user [<args>]]
+
+User endpoint profile
+  --username <username>
+
+Example:
+  samu.py vmware user 
+  samu.py vmware user --username herring
+    ''')
+    parser.add_argument('--username',  default=None,  help="Username to query")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.username is not None:
+      url = self.vmware_url + "/user/" + args.username + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    else:
+      url = self.vmware_url + "/user/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
 
   def ticket(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware ticket [<args>]]
+
+Ticket endpoint profile
+  --ticket <ticket_number>
+
+Example:
+  samu.py vmware ticket
+  samu.py vmware ticket --ticket 1234
+    ''')
+    parser.add_argument('--ticket',  default=None,  help="Moref to Hostsystem object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.ticket is not None:
+      url = self.vmware_url + "/ticket/" + args.ticket + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    else:
+      url = self.vmware_url + "/ticket/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
 
   def template(self):
     self.check_session_exists()
