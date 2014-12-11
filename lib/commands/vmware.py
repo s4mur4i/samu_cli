@@ -132,7 +132,38 @@ Example:
     print "implementing"
 
   def template(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware template [<args>]]
+
+Template endpoint profile
+  --moref <moref>
+  --unlink
+
+Example:
+  samu.py vmware template 
+  samu.py vmware template --moref vm-1111
+  samu.py vmware template --moref vm-1111 --unlink
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to Task object")
+    parser.add_argument('--unlink',  action='store_true',  help="Unlink linked clones")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/template/" + args.moref + "/-/" + self.sessionid
+      if args.unlink == True:
+        resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        linked_clones = resp['result'][1]['active_linked_clones']
+        del resp['result'][1]
+        self.output(linked_clones)
+    else:
+      url = self.vmware_url + "/template/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
 
   def task(self):
     self.check_session_exists()
