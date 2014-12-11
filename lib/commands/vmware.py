@@ -124,7 +124,70 @@ Example:
     print "implementing"
 
   def resourcepool(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware resourcepool [<args>]]
+
+Resourcepool endpoint profile
+  --moref <moref>
+  --move_child_moref <moref>
+  --move_child_type <VMware object type>
+  --move_parent <moref>
+  --create_name <resourcepool_name>
+  --delete
+
+Example:
+  samu.py vmware resourcepool 
+  samu.py vmware resourcepool --moref resgroup-111
+
+  samu.py vmware resourcepool --create_name herring
+  samu.py vmware resourcepool --moref resgroup-111 --create_name herring
+
+  samu.py vmware resourcepool --moref resgroup-111 --delete
+
+  samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder 
+  samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder --move_parent resgroup-111
+  samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder --moref resgroup-111
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref of resourcepool")
+    parser.add_argument('--delete',  action='store_true',  help="Delete the resourcepool")
+    parser.add_argument('--create_name',  default=None,  help="Name of resourcepool to create")
+    parser.add_argument('--move_child_moref',  default=None,  help="Child moref to move")
+    parser.add_argument('--move_child_type',  default=None,  help="Type of child moref to move")
+    parser.add_argument('--move_parent',  default=None,  help="Parent moref to move to")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/resourcepool/" + args.moref + "/-/" + self.sessionid
+      if args.create_name is not None:
+        self.payload['name'] = args.create_name
+        resp = requests.post(url,  data=self.http_payload(self.payload)).json()
+      elif args.move_child_moref is not None:
+        self.payload['child_value'] = args.move_child_moref
+        self.payload['child_type'] = args.move_child_type
+        resp = requests.put(url,  data=self.http_payload(self.payload)).json()
+      elif args.delete == True:
+        resp = requests.delete(url,  data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        runtime = resp['result'][0]['runtime']
+        del resp['result'][0]['runtime']
+        self.output([runtime])
+    else:
+      url = self.vmware_url + "/resourcepool/-/" + self.sessionid
+      if args.create_name is not None:
+        self.payload['name'] = args.create_name
+        resp = requests.post(url,  data=self.http_payload(self.payload)).json()
+      elif args.move_child_moref is not None:
+        self.payload['child_value'] = args.move_child_moref
+        self.payload['child_type'] = args.move_child_type
+        if args.move_parent is not None:
+          self.payload['parent_value'] = args.move_parent
+        resp = requests.put(url,  data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def folder(self):
     self.check_session_exists()
