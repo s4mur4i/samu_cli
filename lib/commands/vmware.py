@@ -151,19 +151,44 @@ Example:
 Vm endpoint
     --moref <moref>
     --delete
+    --clone
+    --ticket <number>
+    --parent_folder <moref>
+    --altername <name>
+    --numcpus <number>
+    --memorymb <size>
 
 Example:
   samu.py vmware vm --moref vm-111
   samu.py vmware vm --moref vm-111 --delete
+  samu.py vmware vm --moref vm-111 --clone --ticket 1234 --parent_folder group-111 --altername client --numcpus 4 --memorymb 4096
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
-    parser.add_argument('--delete',  action='store_true',  help="Moref to a vm object")
+    parser.add_argument('--delete',  action='store_true',  help="VM should be deleted")
+    parser.add_argument('--clone',  action='store_true',  help="Linked clone should be created from vm")
+    parser.add_argument('--ticket',  default=None,  help="Ticket number for environment")
+    parser.add_argument('--parent_folder',  default=None,  help="Parent folder that should be destination, by default linked_clone folder is used")
+    parser.add_argument('--altername',  default=None,  help="Alternate name for machine")
+    parser.add_argument('--numcpus',  default=None,  help="Number of CPUs to use for machine")
+    parser.add_argument('--memorymb',  default=None,  help="Size of memory")
     args = parser.parse_args(sys.argv[3:])
     resp = None
     if args.moref is not None:
       if args.delete == True:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      if args.clone == True:
+        url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
+        self.payload['ticket'] = args.ticket
+        if args.parent_folder is not None:
+          self.payload['parent_folder'] = args.parent_folder
+        if args.altername is not None:
+          self.payload['altername'] = args.altername
+        if args.numcpus is not None:
+          self.payload['numcpus'] = args.numcpus
+        if args.memorymb is not None:
+          self.payload['memorymb'] = args.memorymb
+        resp = requests.post(url, data=self.http_payload(self.payload)).json()
       else:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
