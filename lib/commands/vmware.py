@@ -157,11 +157,33 @@ Vm endpoint
     --altername <name>
     --numcpus <number>
     --memorymb <size>
+    --cdrom
+    --disk
+    --interface
+    --powerstatus
+    --snapshot
+    --event
+    --process
+    --annotation
+    --transfer
+    --cpu
+    --memory
+    --id <id>
+    --type <poewrstate type>
+    --filter <filter type>
+    --name <annotation name>
 
 Example:
   samu.py vmware vm --moref vm-111
   samu.py vmware vm --moref vm-111 --delete
   samu.py vmware vm --moref vm-111 --clone --ticket 1234 --parent_folder group-111 --altername client --numcpus 4 --memorymb 4096
+
+  samu.py vmware vm --moref vm-57 --event
+  samu.py vmware vm --moref vm-57 --event --filter VmPoweredOnEvent
+  
+  samu.py vmware vm --moref vm-57 --process
+  samu.py vmware vm --moref vm-57 --memory
+  samu.py vmware vm --moref vm-57 --cpu
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
     parser.add_argument('--delete',  action='store_true',  help="VM should be deleted")
@@ -171,13 +193,28 @@ Example:
     parser.add_argument('--altername',  default=None,  help="Alternate name for machine")
     parser.add_argument('--numcpus',  default=None,  help="Number of CPUs to use for machine")
     parser.add_argument('--memorymb',  default=None,  help="Size of memory")
+    parser.add_argument('--id',  default=None,  help="Id of the endpoint")
+    parser.add_argument('--type',  default=None,  help="State of powerstatus to move to")
+    parser.add_argument('--filter',  default=None,  help="Type of filter to use for events")
+    parser.add_argument('--name',  default=None,  help="Name of annotation to query")
+    parser.add_argument('--cdrom',  action='store_true',  help="Cdrom management")
+    parser.add_argument('--disk',  action='store_true',  help="Disk management")
+    parser.add_argument('--interface',  action='store_true',  help="Interface management")
+    parser.add_argument('--powerstatus',  action='store_true',  help="Power management")
+    parser.add_argument('--snapshot',  action='store_true',  help="Snapshot management")
+    parser.add_argument('--event',  action='store_true',  help="Event management")
+    parser.add_argument('--process',  action='store_true',  help="Process management")
+    parser.add_argument('--annotation',  action='store_true',  help="Annotation management")
+    parser.add_argument('--transfer',  action='store_true',  help="Transfer management")
+    parser.add_argument('--cpu',  action='store_true',  help="Cpu management")
+    parser.add_argument('--memory',  action='store_true',  help="Memory management")
     args = parser.parse_args(sys.argv[3:])
     resp = None
     if args.moref is not None:
       if args.delete == True:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         resp = requests.delete(url, data=self.http_payload(self.payload)).json()
-      if args.clone == True:
+      elif args.clone == True:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         self.payload['ticket'] = args.ticket
         if args.parent_folder is not None:
@@ -189,6 +226,68 @@ Example:
         if args.memorymb is not None:
           self.payload['memorymb'] = args.memorymb
         resp = requests.post(url, data=self.http_payload(self.payload)).json()
+      elif args.cdrom == True:
+        if args.id is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/cdrom/" + args.id + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/cdrom/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.disk == True:
+        if args.id is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/disk/" + args.id + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/disk/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.interface == True:
+        if args.id is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/interface/" + args.id + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/interface/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.powerstatus == True:
+        if args.type is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/powerstatus/" + args.type + "/-/" + self.sessionid
+          resp = requests.put(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/powerstatus/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.snapshot == True:
+        if args.id is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/snapshot/" + args.id + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/snapshot/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.event == True:
+        if args.filter is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/event/" + args.filter + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/event/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.process == True:
+        url = self.vmware_url + "/vm/" + args.moref + "/process/-/" + self.sessionid
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.annotation == True:
+        if args.name is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/annotation/" + args.name + "/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        else:
+          url = self.vmware_url + "/vm/" + args.moref + "/annotation/-/" + self.sessionid
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.transfer == True:
+#FIXME
+        url = self.vmware_url + "/vm/" + args.moref + "/transfer/-/" + self.sessionid
+        resp = requests.post(url, data=self.http_payload(self.payload)).json()
+      elif args.cpu == True:
+        url = self.vmware_url + "/vm/" + args.moref + "/cpu/-/" + self.sessionid
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      elif args.memory == True:
+        url = self.vmware_url + "/vm/" + args.moref + "/memory/-/" + self.sessionid
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
       else:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
