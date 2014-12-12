@@ -26,7 +26,10 @@ Second level options are following:
   user
   folder
   resourcepool
-  network
+  networks
+  dvp
+  switch
+  hostnetwork
   vm
 
 Global Options:
@@ -76,7 +79,7 @@ Global Output options:
     for item in resp['result']:
       if (item['vcenter_username'] == self.vcenter_username and item['vcenter_url'] == self.vcenter_url):
         epoch_time = int(time.time())   
-        if epoch_time - item['last_used'] > 600:
+        if epoch_time - int(item['last_used']) > 600:
           break
         if item['active'] == 0:
           self.payload = { 'vim_id':item['id']}
@@ -120,8 +123,140 @@ Example:
   def vm(self):
     print "implementing"
 
-  def network(self):
-    print "implementing"
+  def networks(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware networks
+
+Example:
+  samu.py vmware networks
+    ''')
+    resp = None
+    url = self.vmware_url + "/network/-/" + self.sessionid
+    resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    for item in resp['result']:
+      self.output(item)
+
+  def dvp(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware dvp [<args>]
+
+Dvp endpoint
+  --moref <moref>
+  --create
+  --ticket <ticket id>
+  --switch <switch moref>
+  --func <name>
+  --delete
+
+Example:
+  samu.py vmware dvp
+  samu.py vmware dvp --moref dvportgroup-111
+  samu.py vmware dvp --create --ticket 1234 --switch dvs-111 --func ha
+  samu.py vmware dvp --moref dvportgroup-111 --delete
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to a dvp object")
+    parser.add_argument('--ticket',  default=None,  help="Ticket id to use")
+    parser.add_argument('--switch',  default=None,  help="Parent switch to use")
+    parser.add_argument('--func',  default=None,  help="Function for the DVP")
+    parser.add_argument('--create',  action='store_true',  help="A DVP should be created in DVS")
+    parser.add_argument('--delete',  action='store_true',  help="A DVP should be deleted")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/network/dvp/" + args.moref + "/-/" + self.sessionid
+      if args.delete == True:
+        resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        connected = resp['result'][0]['connected_vms']
+        del resp['result'][0]['connected_vms']
+        self.output(connected)
+    else:
+      url = self.vmware_url + "/network/dvp/-/" + self.sessionid
+      if args.create == True:
+        self.payload['ticket'] = args.ticket
+        self.payload['switch'] = args.switch
+        self.payload['func'] = args.func
+        resp = requests.post(url, data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
+  def switch(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware switch [<args>]
+
+Switch endpoint
+  --moref <moref>
+  --create
+  --ticket <ticket id>
+  --host <host moref>
+  --delete
+
+Example:
+  samu.py vmware switch
+  samu.py vmware switch --moref dvs-111
+  samu.py vmware switch --create --ticket 1234 --host host-111
+  samu.py vmware switch --moref dvs-111 --delete
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to a switch object")
+    parser.add_argument('--ticket',  default=None,  help="Ticket id to use")
+    parser.add_argument('--host',  default=None,  help="Parent switch to use")
+    parser.add_argument('--create',  action='store_true',  help="A DVP should be created in DVS")
+    parser.add_argument('--delete',  action='store_true',  help="A DVP should be deleted")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/network/switch/" + args.moref + "/-/" + self.sessionid
+      if args.delete == True:
+        resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        connected = resp['result'][0]['connected_vms']
+        del resp['result'][0]['connected_vms']
+        self.output(connected)
+    else:
+      url = self.vmware_url + "/network/switch/-/" + self.sessionid
+      if args.create == True:
+        self.payload['ticket'] = args.ticket
+        self.payload['host'] = args.host
+        resp = requests.post(url, data=self.http_payload(self.payload)).json()
+      else:
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
+
+  def hostnetwork(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware hostnetwork [<args>]
+
+Hostnetwork endpoint
+  --moref <moref>
+
+Example:
+  samu.py vmware hostnetwork 
+  samu.py vmware hostnetwork --moref dvs-111
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to a hostnetwork object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/network/hostnetwork/" + args.moref + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+      connected = resp['result'][0]['connected_vms']
+      del resp['result'][0]['connected_vms']
+      self.output(connected)
+    else:
+      url = self.vmware_url + "/network/hostnetwork/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def resourcepool(self):
     self.check_session_exists()
