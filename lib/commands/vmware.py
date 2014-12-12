@@ -30,6 +30,7 @@ Second level options are following:
   dvp
   switch
   hostnetwork
+  vm_info
   vm
 
 Global Options:
@@ -119,9 +120,59 @@ Example:
     self.check_status(resp)
     self.output(resp['result'])
 
+  def vm_info(self):
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware vm_info [<args>]
+
+Vm_info endpoint
+    --moref <moref>
+
+Example:
+  samu.py vmware vm_info
+  samu.py vmware vm_info --moref vm-111
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    else:
+      url = self.vmware_url + "/vm/-/" + self.sessionid
+      resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def vm(self):
-    print "implementing"
+    self.check_session_exists()
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware vm [<args>]
+
+Vm endpoint
+    --moref <moref>
+    --delete
+
+Example:
+  samu.py vmware vm --moref vm-111
+  samu.py vmware vm --moref vm-111 --delete
+    ''')
+    parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
+    parser.add_argument('--delete',  action='store_true',  help="Moref to a vm object")
+    args = parser.parse_args(sys.argv[3:])
+    resp = None
+    if args.moref is not None:
+      if args.delete == True:
+        url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
+        resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+      else:
+        url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
+        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+    else:
+      parser.print_help()
+      exit(1)
+    self.logger.debug("Response is: %s" % resp)
+    self.check_status(resp)
+    self.output(resp['result'])
 
   def networks(self):
     self.check_session_exists()
