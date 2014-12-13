@@ -178,7 +178,8 @@ Vm endpoint
     --password <password>
     --overwrite
     --size <filesize>
-    --memorymb
+    --memorymb <size in mb>
+    --numcpus <int>
 
 Example:
   samu.py vmware vm --moref vm-111
@@ -189,7 +190,9 @@ Example:
   samu.py vmware vm --moref vm-111 --event --filter VmPoweredOnEvent
   
   samu.py vmware vm --moref vm-111 --process
+
   samu.py vmware vm --moref vm-111 --cpu
+  samu.py vmware vm --moref vm-111 --cpu --numcpus 4
   
   samu.py vmware vm --moref vm-111 --memory
   samu.py vmware vm --moref vm-111 --memory --memorymb 1000
@@ -328,7 +331,11 @@ Example:
         resp = requests.post(url, data=self.http_payload(self.payload)).json()
       elif args.cpu == True:
         url = self.vmware_url + "/vm/" + args.moref + "/cpu/-/" + self.sessionid
-        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        if args.numcpus is not None:
+          self.payload['numcpus'] = args.numcpus
+          resp = requests.put(url, data=self.http_payload(self.payload)).json()
+        else:
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.memory == True:
         url = self.vmware_url + "/vm/" + args.moref + "/memory/-/" + self.sessionid
         if args.memorymb is not None:
