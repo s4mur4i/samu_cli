@@ -151,6 +151,7 @@ Example:
 Vm endpoint
     --moref <moref>
     --delete
+    --change <value>
     --clone
     --ticket <number>
     --parent_folder <moref>
@@ -171,7 +172,7 @@ Vm endpoint
     --id <id>
     --type <poewrstate type>
     --filter <filter type>
-    --name <annotation name>
+    --name <name>
     --dest <filename>
     --source <filename>
     --username <password>
@@ -180,6 +181,10 @@ Vm endpoint
     --size <filesize>
     --memorymb <size in mb>
     --numcpus <int>
+    --create
+    --remove
+    --desc <description>
+    --active
 
 Example:
   samu.py vmware vm --moref vm-111
@@ -190,6 +195,7 @@ Example:
   samu.py vmware vm --moref vm-111 --event --filter VmPoweredOnEvent
   
   samu.py vmware vm --moref vm-111 --process
+  samu.py vmware vm --moref vm-111 --process --workdir 'C:/' --prog 'C:/windows/System32/dsget.exe' --prog_arg '/? > C:/tmp.log' --env 'TEST=Test'
 
   samu.py vmware vm --moref vm-111 --cpu
   samu.py vmware vm --moref vm-111 --cpu --numcpus 4
@@ -211,14 +217,18 @@ Example:
   samu.py vmware vm --moref vm-111 --interface --id 0
   samu.py vmware vm --moref vm-111 --snapshot
   samu.py vmware vm --moref vm-111 --snapshot --id 111
+
   samu.py vmware vm --moref vm-111 --annotation
   samu.py vmware vm --moref vm-111 --annotation --name samu_password
+  samu.py vmware vm --moref vm-111 --annotation --name samu_password --change test
+  samu.py vmware vm --moref vm-111 --annotation --name samu_password --delete_annotation
   
   samu.py vmware vm --moref vm-111 --transfer --source 'c:/test.log' 
   samu.py vmware vm --moref vm-111 --transfer --dest 'c:/test.log' --size 111 --overwrite 1
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
     parser.add_argument('--delete',  action='store_true',  help="VM should be deleted")
+    parser.add_argument('--delete_annotation',  action='store_true',  help="Annotation should be deleted")
     parser.add_argument('--clone',  action='store_true',  help="Linked clone should be created from vm")
     parser.add_argument('--ticket',  default=None,  help="Ticket number for environment")
     parser.add_argument('--parent_folder',  default=None,  help="Parent folder that should be destination, by default linked_clone folder is used")
@@ -226,6 +236,7 @@ Example:
     parser.add_argument('--numcpus',  default=None,  help="Number of CPUs to use for machine")
     parser.add_argument('--memorymb',  default=None,  help="Size of memory")
     parser.add_argument('--id',  default=None,  help="Id of the endpoint")
+    parser.add_argument('--desc',  default=None,  help="Description")
     parser.add_argument('--type',  default=None,  help="State of powerstatus to move to")
     parser.add_argument('--filter',  default=None,  help="Type of filter to use for events")
     parser.add_argument('--name',  default=None,  help="Name of annotation to query")
@@ -234,7 +245,13 @@ Example:
     parser.add_argument('--password',  default=None,  help="Password for login to vm")
     parser.add_argument('--dest',  default=None,  help="Destination file to upload to")
     parser.add_argument('--source',  default=None,  help="Source file to download")
+    parser.add_argument('--workdir',  default=None,  help="Workdir to use for program")
+    parser.add_argument('--prog',  default=None,  help="Program to run")
+    parser.add_argument('--env',  default=None,  help="Envronment variables for program")
+    parser.add_argument('--prog_arg',  default=None,  help="Arguments to program to run")
+    parser.add_argument('--change',  default=None,  help="Change some value to new")
     parser.add_argument('--cdrom',  action='store_true',  help="Cdrom management")
+    parser.add_argument('--active',  action='store_true',  help="Snapshot should become active")
     parser.add_argument('--disk',  action='store_true',  help="Disk management")
     parser.add_argument('--interface',  action='store_true',  help="Interface management")
     parser.add_argument('--powerstatus',  action='store_true',  help="Power management")
@@ -245,6 +262,8 @@ Example:
     parser.add_argument('--transfer',  action='store_true',  help="Transfer management")
     parser.add_argument('--cpu',  action='store_true',  help="Cpu management")
     parser.add_argument('--memory',  action='store_true',  help="Memory management")
+    parser.add_argument('--remove',  action='store_true',  help="Removes snapshot/s")
+    parser.add_argument('--create',  action='store_true',  help="Creates a snapshot")
     parser.add_argument('--overwrite',  default=0,  help="Should destination file be overriden")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -295,10 +314,23 @@ Example:
       elif args.snapshot == True:
         if args.id is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/snapshot/" + args.id + "/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.remove == True:
+            resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+          elif args.active == True:
+            resp = requests.put(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
         else:
           url = self.vmware_url + "/vm/" + args.moref + "/snapshot/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.create == True:
+            self.payload['name'] = args.name
+            if args.desc is not None:
+              self.payload['desc'] = args.desc
+            resp = requests.post(url, data=self.http_payload(self.payload)).json()
+          elif args.remove == True:
+            resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.event == True:
         if args.filter is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/event/" + args.filter + "/-/" + self.sessionid
@@ -308,9 +340,29 @@ Example:
           resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.process == True:
         url = self.vmware_url + "/vm/" + args.moref + "/process/-/" + self.sessionid
-        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        if args.username is not None:
+          self.payload['username'] = args.username
+        if args.password is not None:
+          self.payload['password'] = args.password
+        if args.prog is not None:
+          self.payload['prog'] = args.prog
+          self.payload['workdir'] = args.workdir
+          if args.prog_arg is not None:
+            self.payload['prog_arg'] = args.prog_arg
+          if args.env is not None:
+            self.payload['env'] = args.env
+          resp = requests.post(url, data=self.http_payload(self.payload)).json()
+        else:
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.annotation == True:
-        if args.name is not None:
+        if args.delete_annotation == True:
+          url = self.vmware_url + "/vm/" + args.moref + "/annotation/" + args.name + "/-/" + self.sessionid
+          resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+        elif args.change is not None:
+          url = self.vmware_url + "/vm/" + args.moref + "/annotation/" + args.name + "/-/" + self.sessionid
+          self.payload['value'] = args.change
+          resp = requests.put(url, data=self.http_payload(self.payload)).json()
+        elif args.name is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/annotation/" + args.name + "/-/" + self.sessionid
           resp = requests.get(url, data=self.http_payload(self.payload)).json()
         else:
