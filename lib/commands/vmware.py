@@ -172,18 +172,47 @@ Vm endpoint
     --type <poewrstate type>
     --filter <filter type>
     --name <annotation name>
+    --dest <filename>
+    --source <filename>
+    --username <password>
+    --password <password>
+    --overwrite
+    --size <filesize>
+    --memorymb
 
 Example:
   samu.py vmware vm --moref vm-111
   samu.py vmware vm --moref vm-111 --delete
   samu.py vmware vm --moref vm-111 --clone --ticket 1234 --parent_folder group-111 --altername client --numcpus 4 --memorymb 4096
 
-  samu.py vmware vm --moref vm-57 --event
-  samu.py vmware vm --moref vm-57 --event --filter VmPoweredOnEvent
+  samu.py vmware vm --moref vm-111 --event
+  samu.py vmware vm --moref vm-111 --event --filter VmPoweredOnEvent
   
-  samu.py vmware vm --moref vm-57 --process
-  samu.py vmware vm --moref vm-57 --memory
-  samu.py vmware vm --moref vm-57 --cpu
+  samu.py vmware vm --moref vm-111 --process
+  samu.py vmware vm --moref vm-111 --cpu
+  
+  samu.py vmware vm --moref vm-111 --memory
+  samu.py vmware vm --moref vm-111 --memory --memorymb 1000
+
+  samu.py vmware vm --moref vm-111 --powerstatus
+  samu.py vmware vm --moref vm-111 --powerstatus --type reboot
+
+  samu.py vmware vm --moref vm-111 --event 
+  samu.py vmware vm --moref vm-111 --event --filter VmPoweredOnEvent 
+  
+  samu.py vmware vm --moref vm-111 --cdrom
+  samu.py vmware vm --moref vm-111 --cdrom --id 0
+  samu.py vmware vm --moref vm-111 --disk
+  samu.py vmware vm --moref vm-111 --disk --id 0
+  samu.py vmware vm --moref vm-111 --interface
+  samu.py vmware vm --moref vm-111 --interface --id 0
+  samu.py vmware vm --moref vm-111 --snapshot
+  samu.py vmware vm --moref vm-111 --snapshot --id 111
+  samu.py vmware vm --moref vm-111 --annotation
+  samu.py vmware vm --moref vm-111 --annotation --name samu_password
+  
+  samu.py vmware vm --moref vm-111 --transfer --source 'c:/test.log' 
+  samu.py vmware vm --moref vm-111 --transfer --dest 'c:/test.log' --size 111 --overwrite 1
     ''')
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
     parser.add_argument('--delete',  action='store_true',  help="VM should be deleted")
@@ -197,6 +226,11 @@ Example:
     parser.add_argument('--type',  default=None,  help="State of powerstatus to move to")
     parser.add_argument('--filter',  default=None,  help="Type of filter to use for events")
     parser.add_argument('--name',  default=None,  help="Name of annotation to query")
+    parser.add_argument('--username',  default=None,  help="Username for login to vm")
+    parser.add_argument('--size',  default=None,  help="Size of upload file")
+    parser.add_argument('--password',  default=None,  help="Password for login to vm")
+    parser.add_argument('--dest',  default=None,  help="Destination file to upload to")
+    parser.add_argument('--source',  default=None,  help="Source file to download")
     parser.add_argument('--cdrom',  action='store_true',  help="Cdrom management")
     parser.add_argument('--disk',  action='store_true',  help="Disk management")
     parser.add_argument('--interface',  action='store_true',  help="Interface management")
@@ -208,6 +242,7 @@ Example:
     parser.add_argument('--transfer',  action='store_true',  help="Transfer management")
     parser.add_argument('--cpu',  action='store_true',  help="Cpu management")
     parser.add_argument('--memory',  action='store_true',  help="Memory management")
+    parser.add_argument('--overwrite',  default=0,  help="Should destination file be overriden")
     args = parser.parse_args(sys.argv[3:])
     resp = None
     if args.moref is not None:
@@ -279,7 +314,16 @@ Example:
           url = self.vmware_url + "/vm/" + args.moref + "/annotation/-/" + self.sessionid
           resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.transfer == True:
-#FIXME
+        if args.source is not None:
+          self.payload['source'] = args.source
+          self.payload['username'] = args.username
+          self.payload['password'] = args.password
+        elif args.dest is not None:
+          self.payload['dest'] = args.dest
+          self.payload['overwrite'] = args.overwrite
+          self.payload['username'] = args.username
+          self.payload['password'] = args.password
+          self.payload['size'] = args.size
         url = self.vmware_url + "/vm/" + args.moref + "/transfer/-/" + self.sessionid
         resp = requests.post(url, data=self.http_payload(self.payload)).json()
       elif args.cpu == True:
@@ -287,7 +331,11 @@ Example:
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.memory == True:
         url = self.vmware_url + "/vm/" + args.moref + "/memory/-/" + self.sessionid
-        resp = requests.get(url, data=self.http_payload(self.payload)).json()
+        if args.memorymb is not None:
+          self.payload['memorymb'] = args.memorymb
+          resp = requests.put(url, data=self.http_payload(self.payload)).json()
+        else:
+          resp = requests.get(url, data=self.http_payload(self.payload)).json()
       else:
         url = self.vmware_url + "/vm/" + args.moref + "/-/" + self.sessionid
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
