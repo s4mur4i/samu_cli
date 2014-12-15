@@ -248,8 +248,10 @@ Example:
     parser.add_argument('--workdir',  default=None,  help="Workdir to use for program")
     parser.add_argument('--prog',  default=None,  help="Program to run")
     parser.add_argument('--env',  default=None,  help="Envronment variables for program")
+    parser.add_argument('--iso',  default=None,  help="Change cdrom to iso")
     parser.add_argument('--prog_arg',  default=None,  help="Arguments to program to run")
     parser.add_argument('--change',  default=None,  help="Change some value to new")
+    parser.add_argument('--change_cdrom', action='store_true',  help="Change cdrom to an iso or back to host backing")
     parser.add_argument('--cdrom',  action='store_true',  help="Cdrom management")
     parser.add_argument('--active',  action='store_true',  help="Snapshot should become active")
     parser.add_argument('--disk',  action='store_true',  help="Disk management")
@@ -286,24 +288,47 @@ Example:
       elif args.cdrom == True:
         if args.id is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/cdrom/" + args.id + "/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.remove == True:
+            resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+          elif args.change_cdrom == True:
+            if args.iso is not None:
+              self.payload['iso'] = args.iso
+            resp = requests.put(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
         else:
           url = self.vmware_url + "/vm/" + args.moref + "/cdrom/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.create ==True:
+            resp = requests.post(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.disk == True:
         if args.id is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/disk/" + args.id + "/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.remove == True:
+            resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
         else:
           url = self.vmware_url + "/vm/" + args.moref + "/disk/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.create ==True:
+            self.payload['size'] = args.size
+            resp = requests.post(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.interface == True:
         if args.id is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/interface/" + args.id + "/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.remove == True:
+            resp = requests.delete(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
         else:
           url = self.vmware_url + "/vm/" + args.moref + "/interface/-/" + self.sessionid
-          resp = requests.get(url, data=self.http_payload(self.payload)).json()
+          if args.create ==True:
+            resp = requests.post(url, data=self.http_payload(self.payload)).json()
+          else:
+            resp = requests.get(url, data=self.http_payload(self.payload)).json()
       elif args.powerstatus == True:
         if args.type is not None:
           url = self.vmware_url + "/vm/" + args.moref + "/powerstatus/" + args.type + "/-/" + self.sessionid
