@@ -6,15 +6,16 @@ import time
 
 class Vmware(ObjectS):
 
-  def __init__(self, logger = None):
+  def __init__(self, logger = None, global_options = None):
     self.logger = logger
+    self.global_options = global_options
     super(Vmware, self).__init__(logger=self.logger)
     self.logger.info('Vmware module entry endpoint')
 
   def start(self):
     self.logger.info('Invoked starting point for Vmware')
     self.vmware_url = self.samu_url + '/vmware'
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py vmware <command> [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py vmware <command> [<args>]]
 
 Second level options are following:
   sessions
@@ -32,25 +33,7 @@ Second level options are following:
   hostnetwork
   vm_info
   vm
-
-Global Options:
-  -v, --verbose       increment verbosity level (max 5)
-  -q, --quiet         decrease verbosity level (max 0)
-  # Default verbosity level 3
-  # Following options defaults to config file but can be overriden
-  # with these arguments
-  --samu_username     Username to use for samu
-  --samu_password     Password to use for samu
-  --samu_url          Url for samu Rest API
-  --samu_verbosity    Verbosity level for server side
-  --vcenter_username  Username to Vcenter
-  --vcenter_password  Password to Vcenter
-  --vcenter_url       SDK url for Vcenter
-
-Global Output options:
-  --table             Output should use Prettytable to printing
-  --csv               Output should use csv format for printing (delimiter ';')
-    ''')
+    ''' + self.global_options)
     parser.add_argument('command',   help='Command to run')
     args = parser.parse_args(sys.argv[2:3])
     if not hasattr(self,  args.command):
@@ -65,7 +48,7 @@ Global Output options:
     url = self.vmware_url + "/-/" + self.sessionid
     payload = { 'vcenter_username': self.vcenter_username, 'vcenter_password':self.vcenter_password, 'vcenter_url':self.vcenter_url}
     resp = requests.post(url, data=self.http_payload(payload)).json()
-    self.logger.debug("Response is: %s" % resp)
+    self.logger.debug("Login response is: %s" % resp)
     self.check_status(resp)
 
   def check_session_exists(self):
@@ -101,7 +84,7 @@ Example:
   samu.py vmware sessions
   samu.py vmware sessions --active 1
   samu.py vmware sessions --logout 1
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--active',  default=None,  help="Change active session to id")
     parser.add_argument('--logout',  default=None,  help="Logs a session out")
     args = parser.parse_args(sys.argv[3:])
@@ -116,7 +99,6 @@ Example:
     else:
       self.logger.debug("Listing sessions")
       resp = requests.get(url, data=self.http_payload()).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -130,7 +112,7 @@ Vm_info endpoint
 Example:
   samu.py vmware vm_info
   samu.py vmware vm_info --moref vm-111
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -140,7 +122,6 @@ Example:
     else:
       url = self.vmware_url + "/vm/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -210,13 +191,24 @@ Example:
   samu.py vmware vm --moref vm-111 --event --filter VmPoweredOnEvent 
   
   samu.py vmware vm --moref vm-111 --cdrom
+  samu.py vmware vm --moref vm-111 --cdrom --create
   samu.py vmware vm --moref vm-111 --cdrom --id 0
+  samu.py vmware vm --moref vm-111 --cdrom --id 0 --change_cdrom --iso '[Datastore] path/to/iso.iso'
+  samu.py vmware vm --moref vm-111 --cdrom --id 0 --remove
   samu.py vmware vm --moref vm-111 --disk
+  samu.py vmware vm --moref vm-111 --disk --create --size 10
   samu.py vmware vm --moref vm-111 --disk --id 0
+  samu.py vmware vm --moref vm-111 --disk --id 0 --remove
   samu.py vmware vm --moref vm-111 --interface
+  samu.py vmware vm --moref vm-111 --interface --create
   samu.py vmware vm --moref vm-111 --interface --id 0
+  samu.py vmware vm --moref vm-111 --interface --id 0 --remove
   samu.py vmware vm --moref vm-111 --snapshot
+  samu.py vmware vm --moref vm-111 --snapshot --create
+  samu.py vmware vm --moref vm-111 --snapshot --remove
   samu.py vmware vm --moref vm-111 --snapshot --id 111
+  samu.py vmware vm --moref vm-111 --snapshot --id 111 --active
+  samu.py vmware vm --moref vm-111 --snapshot --id 111 --remove
 
   samu.py vmware vm --moref vm-111 --annotation
   samu.py vmware vm --moref vm-111 --annotation --name samu_password
@@ -225,7 +217,7 @@ Example:
   
   samu.py vmware vm --moref vm-111 --transfer --source 'c:/test.log' 
   samu.py vmware vm --moref vm-111 --transfer --dest 'c:/test.log' --size 111 --overwrite 1
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to a vm object")
     parser.add_argument('--delete',  action='store_true',  help="VM should be deleted")
     parser.add_argument('--delete_annotation',  action='store_true',  help="Annotation should be deleted")
@@ -426,7 +418,6 @@ Example:
     else:
       parser.print_help()
       exit(1)
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -436,11 +427,10 @@ Example:
 
 Example:
   samu.py vmware networks
-    ''')
+    ''' + self.global_options)
     resp = None
     url = self.vmware_url + "/network/-/" + self.sessionid
     resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     for item in resp['result']:
       self.output(item)
@@ -462,7 +452,7 @@ Example:
   samu.py vmware dvp --moref dvportgroup-111
   samu.py vmware dvp --create --ticket 1234 --switch dvs-111 --func ha
   samu.py vmware dvp --moref dvportgroup-111 --delete
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to a dvp object")
     parser.add_argument('--ticket',  default=None,  help="Ticket id to use")
     parser.add_argument('--switch',  default=None,  help="Parent switch to use")
@@ -489,7 +479,6 @@ Example:
         resp = requests.post(url, data=self.http_payload(self.payload)).json()
       else:
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -509,7 +498,7 @@ Example:
   samu.py vmware switch --moref dvs-111
   samu.py vmware switch --create --ticket 1234 --host host-111
   samu.py vmware switch --moref dvs-111 --delete
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to a switch object")
     parser.add_argument('--ticket',  default=None,  help="Ticket id to use")
     parser.add_argument('--host',  default=None,  help="Parent switch to use")
@@ -534,7 +523,6 @@ Example:
         resp = requests.post(url, data=self.http_payload(self.payload)).json()
       else:
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -548,7 +536,7 @@ Hostnetwork endpoint
 Example:
   samu.py vmware hostnetwork 
   samu.py vmware hostnetwork --moref dvs-111
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to a hostnetwork object")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -561,7 +549,6 @@ Example:
     else:
       url = self.vmware_url + "/network/hostnetwork/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -589,7 +576,7 @@ Example:
   samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder 
   samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder --move_parent resgroup-111
   samu.py vmware resourcepool --move_child_moref resgroup-112 --move_child_type Folder --moref resgroup-111
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref of resourcepool")
     parser.add_argument('--delete',  action='store_true',  help="Delete the resourcepool")
     parser.add_argument('--create_name',  default=None,  help="Name of resourcepool to create")
@@ -627,7 +614,6 @@ Example:
         resp = requests.put(url,  data=self.http_payload(self.payload)).json()
       else:
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -655,7 +641,7 @@ Example:
   samu.py vmware folder --move_child_moref group-v112 --move_child_type Folder 
   samu.py vmware folder --move_child_moref group-v112 --move_child_type Folder --move_parent group-v111
   samu.py vmware folder --move_child_moref group-v112 --move_child_type Folder --moref group-v111
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref of folder")
     parser.add_argument('--delete',  action='store_true',  help="Delete the folder")
     parser.add_argument('--create_name',  default=None,  help="Name of folder to create")
@@ -690,7 +676,6 @@ Example:
         resp = requests.put(url,  data=self.http_payload(self.payload)).json()
       else:
         resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -705,7 +690,7 @@ User endpoint profile
 Example:
   samu.py vmware user 
   samu.py vmware user --username herring
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--username',  default=None,  help="Username to query")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -715,7 +700,6 @@ Example:
     else:
       url = self.vmware_url + "/user/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -730,7 +714,7 @@ Ticket endpoint profile
 Example:
   samu.py vmware ticket
   samu.py vmware ticket --ticket 1234
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--ticket',  default=None,  help="Moref to Hostsystem object")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -740,7 +724,6 @@ Example:
     else:
       url = self.vmware_url + "/ticket/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -757,7 +740,7 @@ Example:
   samu.py vmware template 
   samu.py vmware template --moref vm-1111
   samu.py vmware template --moref vm-1111 --unlink
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to Task object")
     parser.add_argument('--unlink',  action='store_true',  help="Unlink linked clones")
     args = parser.parse_args(sys.argv[3:])
@@ -774,7 +757,6 @@ Example:
     else:
       url = self.vmware_url + "/template/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -791,7 +773,7 @@ Example:
   samu.py vmware task
   samu.py vmware task --moref task-1111
   samu.py vmware task --moref task-1111 --delete
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to Task object")
     parser.add_argument('--delete',  action='store_true',  help="Cancel task")
     args = parser.parse_args(sys.argv[3:])
@@ -807,7 +789,6 @@ Example:
     else:
       url = self.vmware_url + "/task/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -823,7 +804,7 @@ Host endpoint profile
 Example:
   samu.py vmware host
   samu.py vmware host --moref host-11
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to Hostsystem object")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -839,7 +820,6 @@ Example:
     else:
       url = self.vmware_url + "/host/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])
 
@@ -853,7 +833,7 @@ Datastore endpoint profile
 Example:
   samu.py vmware datastore
   samu.py vmware datastore --moref datastore-111
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--moref',  default=None,  help="Moref to datastore object")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -867,6 +847,5 @@ Example:
     else:
       url = self.vmware_url + "/datastore/-/" + self.sessionid
       resp = requests.get(url, data=self.http_payload(self.payload)).json()
-    self.logger.debug("Response is: %s" % resp)
     self.check_status(resp)
     self.output(resp['result'])

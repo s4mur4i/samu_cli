@@ -36,33 +36,36 @@ class Initiator(object):
   
   def __init__(self, logger = None ):
     self.logger = logger
-    parser = argparse.ArgumentParser( description='Samu tool for Support', usage= ''' samu.py <command> [<args>]
-    
-First level options are following:
-  admin               user related interface
-  vmware              vmware related interface
-  kayako              kayako related interface
-  devel               development interface
-
+    self.global_options = '''
 Global Options:
-  -v, --verbose       increment verbosity level (max 5)
-  -q, --quiet         decrease verbosity level (max 0)
+  -v, --verbose                 increment client verbosity level (max 5)
+  -q, --quiet                   decrease client verbosity level (max 0)
   # Default verbosity level 3
   # Following options defaults to config file but can be overriden
   # with these arguments
-  --samu_username     Username to use for samu
-  --samu_password     Password to use for samu
-  --samu_url          Url for samu Rest API
-  --samu_verbosity    Verbosity level for server side
-  --vcenter_username  Username to Vcenter
-  --vcenter_password  Password to Vcenter
-  --vcenter_url       SDK url for Vcenter
+  --samu_username <Username>    Username to use for samu
+  --samu_password <Password>    Password to use for samu
+  --samu_url <Url>              Url for samu Rest API
+  --vcenter_username <Username> Username to Vcenter
+  --vcenter_password <Password> Password to Vcenter
+  --vcenter_url <Url>           SDK url for Vcenter
 
 Global Output options:
-  --table             Output should use Prettytable to printing
-  --csv               Output should use csv format for printing (delimiter ';')
-    ''')
-    parser.add_argument('command',  help='Command to run')
+  --table                       Output should use Prettytable to printing
+  --csv                         Output should use csv format for printing (delimiter ';')
+
+Global Server Side debugging:
+  --samu_verbosity <int>    Verbosity on server side
+    '''
+    parser = argparse.ArgumentParser( description='Samu tool for Support', usage= '''samu.py <command> [<args>]
+    
+First level options are following:
+  admin                         user related interface
+  vmware                        vmware related interface
+  kayako                        kayako related interface
+  devel                         development interface
+    ''' + self.global_options)
+    parser.add_argument('command',  help='Endpoint to use')
     args = parser.parse_args(sys.argv[1:2])
     if not hasattr(self, args.command):
       self.logger.error('Unrecognized command')
@@ -73,13 +76,13 @@ Global Output options:
   def admin(self):
     self.logger.info('First endpoint for admin')
     from admin import Admin
-    a = Admin( logger = self.logger)
+    a = Admin( logger = self.logger, global_options = self.global_options)
     a.start()
 
   def vmware(self):
     self.logger.info('First endpoint for vmware')
     from vmware import Vmware
-    a = Vmware( logger = self.logger)
+    a = Vmware( logger = self.logger, global_options = self.global_options)
     a.start()
 
   def kayako(self):

@@ -13,19 +13,18 @@ class ObjectS(object):
     self.logger = logger
     self.logger.debug("Starting base object")
     config_file = '~/samu.config'
- #   if os.path.isfile(config_file):
     if os.path.isfile(os.path.expanduser('~/samu.config')):
         self.config_parse(config_file)
     else:
       self.logger.warning('No configuration file detected in home directory')
     self.cli_argument_parse()
     self.logger.debug("Samu username is: %s" % self.samu_username )
-    self.logger.debug("Samu password is: %s" % self.samu_password )
     self.logger.debug("Samu url is: %s" % self.samu_url )
     self.logger.debug("Vcenter_username is: %s" % self.vcenter_username )
     self.logger.debug("Vcenter_url is: %s" % self.vcenter_url )
   
   def config_parse(self, file):
+    self.logger.info("Parsing configuration file for default values")
     self.cfg_parser = SafeConfigParser()
     self.cfg_parser.readfp(open(os.path.expanduser(file)))
     self.samu_username = self.cfg_parser.get('general', 'username')
@@ -36,6 +35,7 @@ class ObjectS(object):
     self.vcenter_url = self.cfg_parser.get('vmware', 'vcenter_url')
 
   def cli_argument_parse(self):
+    self.logger.info("Parsing CLI arguments for global options")
     i = 0
     self.table = True
     self.csv = False
@@ -80,11 +80,13 @@ class ObjectS(object):
         sys.argv.pop(i)
         i -= 1
       if sys.argv[i] == '--table':
+        self.logger.info("Table output is being used")
         self.table = True
         self.csv = False
         sys.argv.pop(i)
         i -= 1
       elif sys.argv[i] == '--csv':
+        self.logger.info("Csv output is being used")
         self.table = False
         self.csv = True
         sys.argv.pop(i)
@@ -114,7 +116,7 @@ class ObjectS(object):
      now = datetime.now()
      delta =now - timestamp
      timeout = 300
-     self.logger.debug("Delta is: %s" % delta.total_seconds())
+     self.logger.debug("Time delta is: %s" % delta.total_seconds())
      if delta.total_seconds() < timeout:
        return True
      else:
@@ -125,7 +127,7 @@ class ObjectS(object):
     url = self.samu_url + "/admin/login"
     resp = requests.post(url, data=payload)
     resp = resp.json()
-    self.logger.debug("Response received: " + str(resp))
+    self.logger.debug("Login response is: " + str(resp))
     if resp:
         self.check_status(resp)
         self.sessionid = resp['result'][0]['sessionid']
@@ -144,6 +146,7 @@ class ObjectS(object):
       sys.exit(1)
     
   def output(self, data):
+    self.logger.debug("Response is: %s" % data)
     field_names = None
     try:
       if data and data[0]:

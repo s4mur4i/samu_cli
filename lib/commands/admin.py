@@ -5,15 +5,16 @@ import requests
 
 class Admin(ObjectS):
 
-  def __init__(self, logger = None):
+  def __init__(self, logger = None, global_options = None):
     self.logger = logger
+    self.global_options = global_options
     super(Admin, self).__init__(logger=self.logger)
     self.logger.info('Admin module entry endpoint')
 
   def start(self):
     self.logger.info('Invoked starting point for Admin')
     self.admin_url = self.samu_url + '/admin'
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py <command> [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py <command> [<args>]]
 
 Second level options are following:
   profile
@@ -22,25 +23,7 @@ Second level options are following:
   users
   config
   register
-
-Global Options:
-  -v, --verbose       increment verbosity level (max 5)
-  -q, --quiet         decrease verbosity level (max 0)
-  # Default verbosity level 3
-  # Following options defaults to config file but can be overriden
-  # with these arguments
-  --samu_username     Username to use for samu
-  --samu_password     Password to use for samu
-  --samu_url          Url for samu Rest API
-  --samu_verbosity    Verbosity level for server side
-  --vcenter_username  Username to Vcenter
-  --vcenter_password  Password to Vcenter
-  --vcenter_url       SDK url for Vcenter
-
-Global Output options:
-  --table             Output should use Prettytable to printing
-  --csv               Output should use csv format for printing (delimiter ';')
-    ''')
+    ''' + self.global_options)
     parser.add_argument('command',   help='Command to run')
     args = parser.parse_args(sys.argv[2:3])
     if not hasattr(self,  args.command):
@@ -51,7 +34,7 @@ Global Output options:
 
   def profile(self):
     self.get_sessionid()
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin profile [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py admin profile [<args>]]
 
 User endpoint args:
   --id <user_id>
@@ -66,8 +49,7 @@ Example:
   samu.py admin profile --id 1
   samu.py admin profile --id 1 --delete
   samu.py admin profile --id 1 --update --username herring --email herring@sea.xxx --password tunafish
-  
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--id', default=None, help="Get profile of specific id")
     parser.add_argument('--delete', action='store_true', help="Delete a specific user")
     parser.add_argument('--update', action='store_true', help="Update should be done to settings")
@@ -108,7 +90,7 @@ Example:
 
   def roles(self):
     self.get_sessionid()
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin roles [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py admin roles [<args>]]
 
 Roles endpoint args:
   --role <role_name>     List, remove, update users in a role
@@ -120,7 +102,7 @@ Example:
   samu.py admin roles --role admin
   samu.py admin roles --role admin --remove 1
   samu.py admin roles --role admin --update 1
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--role', default=None, help="Endpoint for specific role")
     parser.add_argument('--remove', default=None, help="Remove specific user id")
     parser.add_argument('--update', default=None, help="Add specific user id")
@@ -145,7 +127,7 @@ Example:
 
   def users(self):
     self.get_sessionid()
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin users [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py admin users [<args>]]
 
 User endpoint args:
   --username <user_id>
@@ -153,7 +135,7 @@ User endpoint args:
 Example:
   samu.py admin users
   samu.py admin users --username herring
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--username', default=None, help="Get id of specific username")
     args = parser.parse_args(sys.argv[3:])
     resp = None
@@ -169,7 +151,7 @@ Example:
 
   def config(self):
     self.get_sessionid()
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin config [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py admin config [<args>]]
 
 Config endpoint args:
   --id <userid>
@@ -182,7 +164,7 @@ Example:
   samu.py admin config --id <userid>
   samu.py admin config --id <userid> --delete --name mac_base
   samu.py admin config --id <userid> --update --name mac_base --value 00:11:22:
-    ''')
+    ''' + self.global_options)
     parser.add_argument('--id', default=None, help="Get profile of specific id")
     parser.add_argument('--update', action='store_true', help="The configuration option should be updated")
     parser.add_argument('--delete', action='store_true', help="The configration option should be removed from database")
@@ -204,13 +186,16 @@ Example:
     self.output(resp['result'])
 
   def register(self):
-    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= ''' samu.py admin register [<args>]]
+    parser = argparse.ArgumentParser( description='Samu tool for Support',  usage= '''samu.py admin register [<args>]]
 
 Register endpoint args:
   --email
   --username
   --password
-    ''')
+
+Example:
+  samu.py admin register --email herring@sea.com --username herring --password tunafish
+    ''' + self.global_options)
     parser.add_argument('--email',  default=None,  help="Email address of user")
     parser.add_argument('--username',  default=None,  help='Username of user')
     parser.add_argument('--password',  default=None,  help='Requested password for user')
@@ -220,3 +205,4 @@ Register endpoint args:
     self.check_status(resp)
     print "User has been registered with %s username and id of %s " % ( args.username, resp['result'][0]['id'])
     print "Please update samu.config in your home directory"
+    print "Skeleton can be found in $samu_root_dir/etc folder"
